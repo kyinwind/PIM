@@ -1,4 +1,5 @@
 <resources>
     <string name="app_name">个人密码箱</string>
     <string name="activity_main_title">文件夹</string>
+    <string name="temp_user">临时用户</string>
 </resources>

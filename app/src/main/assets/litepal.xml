@@ -1,0 +1,13 @@
+<?xml version="1.0" encoding="utf-8"?>
+<litepal>
+    <dbname value="pim" ></dbname>
+
+    <version value="1" ></version>
+
+    <list>
+        <mapping class="com.kylinwind.pim.model.SysUser"></mapping>
+        <mapping class="com.kylinwind.pim.model.Catalog"></mapping>
+        <mapping class="com.kylinwind.pim.model.PersonalInfo"></mapping>
+        <mapping class="com.kylinwind.pim.model.Files"></mapping>
+    </list>
+</litepal>
