@@ -1,5 +1,7 @@
 package com.kylinwind.pim.model;
 
+import com.kylinwind.pim.R;
+
 import org.litepal.annotation.Column;
 import org.litepal.crud.DataSupport;
 
@@ -9,12 +11,12 @@ import java.util.List;
 /**
  * Created by yangx on 2016/8/14.
  */
-public class Catalog  extends DataSupport {
+public class Catalog extends DataSupport {
     @Column(unique = true, defaultValue = "unknown")
     private int catalog_id;
     private String name;
     private String type;
-    private String icon;
+    private int icon;
     private int up_catalog_id;
     private int ord;
 
@@ -54,11 +56,26 @@ public class Catalog  extends DataSupport {
         this.type = type;
     }
 
-    public String getIcon() {
+    public int getIcon() {
+        //通过类型来设置icon
+        switch (type) {
+            case "bank":
+                this.setIcon(R.mipmap.bank);
+                break;
+            case "website":
+                this.setIcon(R.mipmap.website);
+                break;
+            case "others":
+                this.setIcon(R.mipmap.catalog);
+                break;
+            default:
+                this.setIcon(R.mipmap.catalog);
+                break;
+        }
         return icon;
     }
 
-    public void setIcon(String icon) {
+    public void setIcon(int icon) {
         this.icon = icon;
     }
 
@@ -76,5 +93,10 @@ public class Catalog  extends DataSupport {
 
     public void setOrd(int ord) {
         this.ord = ord;
+    }
+
+    public int getMaxCatalogId() {
+        int result = DataSupport.max(Catalog.class, "catalog_id", int.class);
+        return result;
     }
 }

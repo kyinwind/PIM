@@ -32,7 +32,7 @@
             <ImageButton
                 android:layout_width="40dp"
                 android:layout_height="match_parent"
-                android:id="@+id/imageButton4"
+                android:id="@+id/ibSetting"
                 android:src="@mipmap/setting2"
                 android:scaleType="fitCenter"
                 android:layout_alignParentRight="false"
@@ -41,7 +41,7 @@
             <ImageButton
                 android:layout_width="40dp"
                 android:layout_height="match_parent"
-                android:id="@+id/imageButton5"
+                android:id="@+id/ibUser"
                 android:src="@mipmap/user"
                 android:scaleType="fitCenter"
                 android:layout_alignParentRight="true" />
@@ -63,7 +63,7 @@
             android:text="搜索" />
 
         <ImageButton
-            android:id="@+id/imageButton"
+            android:id="@+id/ibSearch"
             android:layout_width="50dp"
             android:layout_height="match_parent"
             android:layout_gravity="right"
@@ -88,7 +88,7 @@
         android:weightSum="1">
 
         <ImageButton
-            android:id="@+id/imageButton2"
+            android:id="@+id/ibAdd"
             android:layout_width="40dp"
             android:layout_height="match_parent"
             android:layout_gravity="left"
@@ -103,7 +103,7 @@
             android:layout_weight="1" />
 
         <ImageButton
-            android:id="@+id/imageButton3"
+            android:id="@+id/ibDel"
             android:layout_width="40dp"
             android:layout_height="match_parent"
             android:layout_gravity="right"
