@@ -22,6 +22,9 @@ import android.widget.ListView;
 import android.widget.TextView;
 import android.widget.Toast;
 
+import com.daimajia.swipe.SimpleSwipeListener;
+import com.daimajia.swipe.SwipeLayout;
+import com.daimajia.swipe.adapters.BaseSwipeAdapter;
 import com.kylinwind.pim.model.Catalog;
 import com.kylinwind.pim.model.PersonalInfo;
 import com.kylinwind.pim.model.SysUser;
@@ -269,7 +272,7 @@ public class FragmentCatalog extends Fragment {
     }
 
 
-    public class ListViewAdapter extends BaseAdapter {
+    public class ListViewAdapter extends BaseSwipeAdapter {
         List<View> itemViews = new ArrayList();
 
         public void addItem(String name, String info, int resid) {
@@ -335,11 +338,50 @@ public class FragmentCatalog extends Fragment {
         }
 
         @Override
+        public int getSwipeLayoutResourceId(int i) {
+            //return the `SwipeLayout` resource id in your listview | gridview item layout.
+            return R.id.swipe;
+        }
+
+        @Override
+        public View generateView(int position, ViewGroup viewGroup) {
+            //render a new item layout.
+            View v = LayoutInflater.from(cont).inflate(R.layout.listitem, null);
+            SwipeLayout swipeLayout = (SwipeLayout)v.findViewById(getSwipeLayoutResourceId(position));
+            swipeLayout.addSwipeListener(new SimpleSwipeListener() {
+                @Override
+                public void onOpen(SwipeLayout layout) {
+                    YoYo.with(Techniques.Tada).duration(500).delay(100).playOn(layout.findViewById(R.id.trash));
+                }
+            });
+            swipeLayout.setOnDoubleClickListener(new SwipeLayout.DoubleClickListener() {
+                @Override
+                public void onDoubleClick(SwipeLayout layout, boolean surface) {
+                    Toast.makeText(mContext, "DoubleClick", Toast.LENGTH_SHORT).show();
+                }
+            });
+            v.findViewById(R.id.delete).setOnClickListener(new View.OnClickListener() {
+                @Override
+                public void onClick(View view) {
+                    Toast.makeText(mContext, "click delete", Toast.LENGTH_SHORT).show();
+                }
+            });
+            return v;
+        }
+
+        @Override
+        public void fillValues(int i, View view) {
+/*fill values to your item layout returned from `generateView`.
+  The position param here is passed from the BaseAdapter's 'getView()*/
+
+        }
+
+/*        @Override
         public View getView(int position, View convertView, ViewGroup parent) {
             ViewHolder vh = null;
             if (convertView == null) {
                 vh = new ViewHolder();
-                View itemView =  itemViews.get(position);
+                View itemView = itemViews.get(position);
                 // 通过findViewById()方法实例R.layout.item内各组件
                 TextView title = (TextView) itemView.findViewById(R.id.title);
                 vh.setTvTitle(title);
@@ -350,23 +392,20 @@ public class FragmentCatalog extends Fragment {
                 itemView.setTag(vh);
                 return itemViews.get(position);
             } else {
-                vh = (ViewHolder)convertView.getTag();
+                vh = (ViewHolder) convertView.getTag();
                 vh.getIv().setImageResource(cataloglist.get(position).getIcon());
                 vh.getTvTitle().setText(cataloglist.get(position).getName());
                 vh.getTvInfo().setText(cataloglist.get(position).getName());
                 return convertView;
             }
-
-
-        }
+        }*/
 
     }
 
-    public class ViewHolder
-    {
-        public  ImageView iv;
-        public  TextView tvTitle;
-        public  TextView tvInfo;
+    public class ViewHolder {
+        public ImageView iv;
+        public TextView tvTitle;
+        public TextView tvInfo;
 
         public ImageView getIv() {
             return iv;
