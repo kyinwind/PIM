@@ -20,31 +20,31 @@
             android:layout_width="fill_parent"
             android:layout_height="fill_parent"
             android:layout_gravity="center"
+            android:background="@drawable/textview_border_bottom"
             android:editable="false"
             android:gravity="center_vertical|center_horizontal"
-            android:text="@string/activity_main_title"
-            android:background="@drawable/textview_border_bottom" />
+            android:text="@string/activity_main_title" />
 
         <RelativeLayout
             android:layout_width="match_parent"
             android:layout_height="match_parent">
 
             <ImageButton
+                android:id="@+id/ibSetting"
                 android:layout_width="40dp"
                 android:layout_height="match_parent"
-                android:id="@+id/ibSetting"
-                android:src="@mipmap/setting2"
-                android:scaleType="fitCenter"
                 android:layout_alignParentRight="false"
-                android:layout_toLeftOf="@+id/imageButton5" />
+                android:layout_toLeftOf="@+id/ibUser"
+                android:scaleType="fitCenter"
+                android:src="@mipmap/setting2" />
 
             <ImageButton
+                android:id="@+id/ibUser"
                 android:layout_width="40dp"
                 android:layout_height="match_parent"
-                android:id="@+id/ibUser"
-                android:src="@mipmap/user"
+                android:layout_alignParentRight="true"
                 android:scaleType="fitCenter"
-                android:layout_alignParentRight="true" />
+                android:src="@mipmap/user" />
         </RelativeLayout>
     </FrameLayout>
 
@@ -62,6 +62,12 @@
             android:layout_weight="1"
             android:text="搜索" />
 
+        <LinearLayout
+            android:layout_width="0px"
+            android:layout_height="0px"
+            android:focusable="true"
+            android:focusableInTouchMode="true" />
+
         <ImageButton
             android:id="@+id/ibSearch"
             android:layout_width="50dp"
@@ -78,8 +84,8 @@
         android:layout_height="342dp"
         android:layout_gravity="center_horizontal"
         android:layout_weight="1"
-        android:choiceMode="singleChoice"
-        android:background="@drawable/textview_border_bottom" />
+        android:background="@drawable/textview_border_bottom"
+        android:choiceMode="singleChoice" />
 
     <LinearLayout
         android:layout_width="match_parent"

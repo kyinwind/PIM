@@ -12,6 +12,16 @@ import java.util.List;
  * Created by yangx on 2016/8/14.
  */
 public class Catalog extends DataSupport {
+    private int id ;
+
+    public int getId() {
+        return id;
+    }
+
+    public void setId(int id) {
+        this.id = id;
+    }
+
     @Column(unique = true, defaultValue = "unknown")
     private int catalog_id;
     private String name;
@@ -98,5 +108,9 @@ public class Catalog extends DataSupport {
     public int getMaxCatalogId() {
         int result = DataSupport.max(Catalog.class, "catalog_id", int.class);
         return result;
+    }
+
+    public int getMaxCatalogIdPlus1() {
+        return getMaxCatalogId() + 1;
     }
 }

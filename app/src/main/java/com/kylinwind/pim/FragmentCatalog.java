@@ -23,6 +23,7 @@ import android.widget.TextView;
 import android.widget.Toast;
 
 import com.kylinwind.pim.model.Catalog;
+import com.kylinwind.pim.model.PersonalInfo;
 import com.kylinwind.pim.model.SysUser;
 
 import org.litepal.crud.DataSupport;
@@ -40,7 +41,7 @@ public class FragmentCatalog extends Fragment {
     private List<Catalog> cataloglist = new ArrayList<Catalog>();  //声明一个list，动态存储要显示的信
     public Context cont;
     private ImageButton ibAdd;
-    private ImageButton ibDelete;
+    private ImageButton ibDel;
 
     EditText etNewCatalog;
     ListViewAdapter lva;
@@ -58,7 +59,7 @@ public class FragmentCatalog extends Fragment {
         View v = inflater.inflate(R.layout.fragment_catalog, container, false);
         listView = (ListView) v.findViewById(R.id.listView);    //将listView与布局对象关联
         ibAdd = (ImageButton) v.findViewById(R.id.ibAdd);
-        ibDelete = (ImageButton) v.findViewById(R.id.ibDelete);
+        ibDel = (ImageButton) v.findViewById(R.id.ibDel);
         //初始化数据库，创建数据库或获得一个数据库
         db = Connector.getDatabase();
         Log.d(TAG, "Connector.getDatabase执行");
@@ -91,7 +92,7 @@ public class FragmentCatalog extends Fragment {
 
         listView.setOnCreateContextMenuListener(new View.OnCreateContextMenuListener() {
             public void onCreateContextMenu(ContextMenu conMenu, View view, ContextMenu.ContextMenuInfo info) {
-                conMenu.setHeaderTitle("操作");
+                conMenu.setHeaderTitle("操作:");
                 conMenu.add(0, 0, 0, "修改名称");
                 conMenu.add(0, 1, 1, "删除");
                 conMenu.add(0, 2, 2, "新增");
@@ -108,7 +109,10 @@ public class FragmentCatalog extends Fragment {
                 }
         );
 
-
+        //设置焦点
+        listView.setFocusable(true);
+        listView.requestFocus();
+        listView.setFocusableInTouchMode(true);
         return v;
     }
 
@@ -125,8 +129,8 @@ public class FragmentCatalog extends Fragment {
                 //Catalog delrec = Catalog.find(Catalog.class,aItem.getTitle());
                 TextView titleview = (TextView) info.targetView.findViewById(R.id.title);
                 //Toast.makeText(cont, "你点击了条目二"+titleview.getText().toString(), Toast.LENGTH_SHORT).show();
-
-                this.delCatalog(titleview.getText().toString());
+                this.curCatalogName = titleview.getText().toString();
+                this.delCatalog();
                 return true;
             case 2:
                 //新增文件夹
@@ -150,7 +154,7 @@ public class FragmentCatalog extends Fragment {
     public void addCatalog() {
         etNewCatalog = new EditText(cont);
         new AlertDialog.Builder(cont).
-                setTitle("请输入").
+                setTitle("请输入新文件名称").
                 setIcon(android.R.drawable.ic_dialog_info).
                 setView(etNewCatalog).
                 setPositiveButton("确定", new AddDialogListener()).
@@ -159,16 +163,32 @@ public class FragmentCatalog extends Fragment {
     }
 
     public Catalog addCatalog(String name) {
-        Catalog c = new Catalog();
+        if (name == null || name.equals("")) {
+            Toast.makeText(cont, "请输入文件夹名称！", Toast.LENGTH_LONG).show();
+            return null;
+        }
+
+        Catalog c = null;
+        //检查名称是否有重复
+        int i = 0;
+        for (i = 0; i < cataloglist.size(); i++) {
+            c = cataloglist.get(i);
+            if (c.getName().equals(name)) {
+                Toast.makeText(cont, "输入的名称重复!", Toast.LENGTH_LONG).show();
+                return null;
+            }
+        }
+        c = new Catalog();
         c.setOrd(0);
         c.setType("catalog");
         c.setIcon(c.getIcon());
-        c.setCatalog_id(c.getMaxCatalogId());
+        c.setCatalog_id(c.getMaxCatalogIdPlus1());
         c.setUp_catalog_id(0);
         c.setName(name);
         Log.d(TAG, c.toString());
         if (c.save()) {
-            this.cataloglist.add(c);
+            cataloglist.add(c);
+            lva.addItem(c.getName(), c.getName(), c.getIcon());
             this.lva.notifyDataSetChanged();
             CharSequence msg = "添加文件夹：" + name + "成功！";
             Toast.makeText(cont, msg, Toast.LENGTH_LONG).show();
@@ -182,7 +202,7 @@ public class FragmentCatalog extends Fragment {
     public void delCatalog() {
         //根据名称找到catalogid
         int i;
-        Catalog c=null;
+        Catalog c = null;
         for (i = 0; i < cataloglist.size(); i++) {
             c = cataloglist.get(i);
             if (c.getName().equals(curCatalogName)) {
@@ -190,46 +210,55 @@ public class FragmentCatalog extends Fragment {
             }
         }
         if (c != null) {
-            this.deleteCatalogById(c.getCatalog_id());
-        }
-
-    }
-
-    public void delCatalog(String name) {
-        TextView tv = new TextView(cont);
-        tv.setText("是否确定删除文件夹:" + name + "?");
-        curCatalogName = name;
-        new AlertDialog.Builder(cont).
-                setTitle("请确定是否删除").
-                setIcon(android.R.drawable.ic_dialog_info).
-                setView(tv).
-                setPositiveButton("确定", new DialogInterface.OnClickListener() {
-                    //which为点击按钮的标识符，是一个 整形的数据，对于这三个按钮而言，每个按钮使用不同的int类型数据进行标识：
-                    // Positive（-1）、Negative(-2)、 Neutral(-3)。
-                    @Override
-                    public void onClick(DialogInterface dialog, int which) {
-                        //开始删除catalog
-                        delCatalog();
-                    }
-                }).
-                setNegativeButton("取消", null).
-                show();
-    }
-
-    public void deleteCatalogById(int catalogid) {
-        //删除某个文件夹
-        DataSupport.delete(Catalog.class, catalogid);
-        //从cataloglist里面remove
-        int i;
-        for (i = 0; i < cataloglist.size(); i++) {
-            Catalog c = cataloglist.get(i);
-            if (c.getCatalog_id() == catalogid) {
-                break;
+            if (c.getCatalog_id() <= 3) {
+                Toast.makeText(cont, "您不能删除应用默认文件夹！", Toast.LENGTH_LONG).show();
+                return;
             }
+
+            TextView tv = new TextView(cont);
+            tv.setText("是否确定删除文件夹:" + c.getName() + "?");
+
+            new AlertDialog.Builder(cont).
+                    setTitle("请确定是否删除").
+                    setIcon(android.R.drawable.ic_dialog_info).
+                    setView(tv).
+                    setPositiveButton("确定", new DialogInterface.OnClickListener() {
+                        //which为点击按钮的标识符，是一个 整形的数据，对于这三个按钮而言，每个按钮使用不同的int类型数据进行标识：
+                        // Positive（-1）、Negative(-2)、 Neutral(-3)。
+                        @Override
+                        public void onClick(DialogInterface dialog, int which) {
+                            //开始删除catalog
+                            int i;
+                            Catalog c = null;
+                            for (i = 0; i < cataloglist.size(); i++) {
+                                c = cataloglist.get(i);
+                                if (c.getName().equals(curCatalogName)) {
+                                    break;
+                                }
+                            }
+                            //检查是否有对应的personnalInfo记录，如果有则不允许删除
+                            int count = DataSupport.where("catalog_id = ?", String.valueOf(c.getCatalog_id())).count(PersonalInfo.class);
+                            if (count > 0) {
+                                Toast.makeText(cont, "您删除的文件夹还有账号记录，请先删除账号记录再删除文件夹！", Toast.LENGTH_LONG).show();
+                                return;
+                            }
+
+                            //删除某个文件夹
+                            int rowdel = DataSupport.delete(Catalog.class, c.getId());
+                            //从cataloglist里面remove
+                            cataloglist.remove(i);
+                            lva.delItem(i);
+                            lva.notifyDataSetChanged();
+                        }
+                    }).
+                    setNegativeButton("取消", null).
+                    show();
+
+
         }
-        cataloglist.remove(i);
-        lva.notifyDataSetChanged();
+
     }
+
 
     @Override
     public void onCreate(Bundle savedInstanceState) {
@@ -241,28 +270,50 @@ public class FragmentCatalog extends Fragment {
 
 
     public class ListViewAdapter extends BaseAdapter {
-        View[] itemViews;
+        List<View> itemViews = new ArrayList();
+
+        public void addItem(String name, String info, int resid) {
+            itemViews.add(makeItemView(name, info, resid));
+        }
+
+        public void delItem(String name) {
+            int i = 0;
+            for (i = 0; i < itemViews.size(); i++) {
+                View v = itemViews.get(i);
+                TextView title = (TextView) v.findViewById(R.id.title);
+                ;    //填入相应的值
+                if (title.getText().equals(name)) {
+                    break;
+                }
+
+            }
+            this.delItem(i);
+        }
+
+        public void delItem(int position) {
+            itemViews.remove(position);
+        }
 
         public ListViewAdapter(List<Catalog> list) {
             // TODO Auto-generated constructor stub
-            itemViews = new View[list.size()];
             for (int i = 0; i < list.size(); i++) {
                 Catalog getInfo = (Catalog) list.get(i);    //获取第i个对象
                 //调用makeItemView，实例化一个Item
-                itemViews[i] = makeItemView(
-                        getInfo.getName(), getInfo.getName(), R.mipmap.catalog
-                );
+                itemViews.add(makeItemView(getInfo.getName(), getInfo.getName(), getInfo.getIcon()));
             }
         }
 
+        @Override
         public int getCount() {
-            return itemViews.length;
+            return itemViews.size();
         }
 
+        @Override
         public View getItem(int position) {
-            return itemViews[position];
+            return itemViews.get(position);
         }
 
+        @Override
         public long getItemId(int position) {
             return position;
         }
@@ -271,10 +322,8 @@ public class FragmentCatalog extends Fragment {
         private View makeItemView(String strTitle, String strText, int resId) {
             LayoutInflater inflater = (LayoutInflater) cont
                     .getSystemService(Context.LAYOUT_INFLATER_SERVICE);
-
             // 使用View的对象itemView与R.layout.item关联
             View itemView = inflater.inflate(R.layout.listitem, null);
-
             // 通过findViewById()方法实例R.layout.item内各组件
             TextView title = (TextView) itemView.findViewById(R.id.title);
             title.setText(strTitle);    //填入相应的值
@@ -282,19 +331,67 @@ public class FragmentCatalog extends Fragment {
             text.setText(strText);
             ImageView image = (ImageView) itemView.findViewById(R.id.catalog_img);
             image.setImageResource(resId);
-
             return itemView;
         }
 
-
+        @Override
         public View getView(int position, View convertView, ViewGroup parent) {
-            if (convertView == null)
-                return itemViews[position];
-            return convertView;
+            ViewHolder vh = null;
+            if (convertView == null) {
+                vh = new ViewHolder();
+                View itemView =  itemViews.get(position);
+                // 通过findViewById()方法实例R.layout.item内各组件
+                TextView title = (TextView) itemView.findViewById(R.id.title);
+                vh.setTvTitle(title);
+                TextView text = (TextView) itemView.findViewById(R.id.info);
+                vh.setTvInfo(text);
+                ImageView image = (ImageView) itemView.findViewById(R.id.catalog_img);
+                vh.setIv(image);
+                itemView.setTag(vh);
+                return itemViews.get(position);
+            } else {
+                vh = (ViewHolder)convertView.getTag();
+                vh.getIv().setImageResource(cataloglist.get(position).getIcon());
+                vh.getTvTitle().setText(cataloglist.get(position).getName());
+                vh.getTvInfo().setText(cataloglist.get(position).getName());
+                return convertView;
+            }
+
+
         }
 
     }
 
+    public class ViewHolder
+    {
+        public  ImageView iv;
+        public  TextView tvTitle;
+        public  TextView tvInfo;
+
+        public ImageView getIv() {
+            return iv;
+        }
+
+        public void setIv(ImageView iv) {
+            this.iv = iv;
+        }
+
+        public TextView getTvTitle() {
+            return tvTitle;
+        }
+
+        public void setTvTitle(TextView tvTitle) {
+            this.tvTitle = tvTitle;
+        }
+
+        public TextView getTvInfo() {
+            return tvInfo;
+        }
+
+        public void setTvInfo(TextView tvInfo) {
+            this.tvInfo = tvInfo;
+        }
+    }
 
     //如果是第一次运行，那么初始化数据
     public void initData() {
