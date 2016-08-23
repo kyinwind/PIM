@@ -2,4 +2,7 @@
     <string name="app_name">个人密码箱</string>
     <string name="activity_main_title">文件夹</string>
     <string name="temp_user">临时用户</string>
+    <string name="delete">删除</string>
+    <string name="deleteAsk">是否确定删除？</string>
+
 </resources>

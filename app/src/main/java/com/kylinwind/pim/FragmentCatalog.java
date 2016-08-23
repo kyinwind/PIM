@@ -3,6 +3,7 @@ package com.kylinwind.pim;
 import android.content.Context;
 import android.content.DialogInterface;
 import android.database.sqlite.SQLiteDatabase;
+import android.graphics.Color;
 import android.os.Bundle;
 import android.support.annotation.Nullable;
 import android.support.v4.app.Fragment;
@@ -11,10 +12,13 @@ import android.util.Log;
 import android.view.ContextMenu;
 import android.view.LayoutInflater;
 import android.view.MenuItem;
+import android.view.MotionEvent;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.AbsListView;
 import android.widget.AdapterView;
 import android.widget.BaseAdapter;
+import android.widget.Button;
 import android.widget.EditText;
 import android.widget.ImageButton;
 import android.widget.ImageView;
@@ -25,6 +29,7 @@ import android.widget.Toast;
 import com.daimajia.swipe.SimpleSwipeListener;
 import com.daimajia.swipe.SwipeLayout;
 import com.daimajia.swipe.adapters.BaseSwipeAdapter;
+import com.daimajia.swipe.util.Attributes;
 import com.kylinwind.pim.model.Catalog;
 import com.kylinwind.pim.model.PersonalInfo;
 import com.kylinwind.pim.model.SysUser;
@@ -73,7 +78,8 @@ public class FragmentCatalog extends Fragment {
         Catalog c = new Catalog();
         cataloglist = c.findAll(Catalog.class);
 
-        lva = new ListViewAdapter(cataloglist);
+        lva = new ListViewAdapter(cont);
+        lva.setMode(Attributes.Mode.Single);
         listView.setAdapter(lva);
 
 
@@ -81,16 +87,53 @@ public class FragmentCatalog extends Fragment {
         listView.setOnItemClickListener(new AdapterView.OnItemClickListener() {
             @Override
             public void onItemClick(AdapterView<?> adapterView, View view, int i, long l) {
+
+               // ((SwipeLayout) (listView.getChildAt(i - listView.getFirstVisiblePosition()))).open(true);
                 Catalog c = cataloglist.get(i);   //通过position获取所点击的对象
                 String infoTitle = c.getName();    //获取信息标题
                 String infoDetails = c.getName();    //获取信息详情
                 //Toast显示测试
-                CharSequence msg = "信息:" + infoTitle + " , " + infoDetails;
-
+               CharSequence msg = "信息:" + infoTitle + " , " + infoDetails;
                 Toast.makeText(cont, msg, Toast.LENGTH_SHORT).show();
             }
         });
+        listView.setOnTouchListener(new View.OnTouchListener() {
+            @Override
+            public boolean onTouch(View v, MotionEvent event) {
+                //Log.e("ListView", "OnTouch");
+                return false;
+            }
+        });
+        listView.setOnItemLongClickListener(new AdapterView.OnItemLongClickListener() {
+            @Override
+            public boolean onItemLongClick(AdapterView<?> parent, View view, int position, long id) {
+                //Toast.makeText(cont, "OnItemLongClickListener", Toast.LENGTH_SHORT).show();
+                return true;
+            }
+        });
+        listView.setOnScrollListener(new AbsListView.OnScrollListener() {
+            @Override
+            public void onScrollStateChanged(AbsListView view, int scrollState) {
+                //Log.e("ListView", "onScrollStateChanged");
+            }
 
+            @Override
+            public void onScroll(AbsListView view, int firstVisibleItem, int visibleItemCount, int totalItemCount) {
+
+            }
+        });
+
+        listView.setOnItemSelectedListener(new AdapterView.OnItemSelectedListener() {
+            @Override
+            public void onItemSelected(AdapterView<?> parent, View view, int position, long id) {
+                Log.e("ListView", "onItemSelected:" + position);
+            }
+
+            @Override
+            public void onNothingSelected(AdapterView<?> parent) {
+                Log.e("ListView", "onNothingSelected:");
+            }
+        });
         //长按菜单显示
 
         listView.setOnCreateContextMenuListener(new View.OnCreateContextMenuListener() {
@@ -275,8 +318,19 @@ public class FragmentCatalog extends Fragment {
     public class ListViewAdapter extends BaseSwipeAdapter {
         List<View> itemViews = new ArrayList();
 
+        private Context mContext;
+
+        public ListViewAdapter(Context mContext) {
+            this.mContext = mContext;
+            for (int i = 0; i < cataloglist.size(); i++) {
+                //Catalog getInfo = (Catalog) list.get(i);    //获取第i个对象
+                //调用makeItemView，实例化一个Item
+                //itemViews.add(makeItemView(getInfo.getName(), getInfo.getName(), getInfo.getIcon()));
+                itemViews.add(null);
+            }
+        }
         public void addItem(String name, String info, int resid) {
-            itemViews.add(makeItemView(name, info, resid));
+            itemViews.add(null);
         }
 
         public void delItem(String name) {
@@ -297,14 +351,15 @@ public class FragmentCatalog extends Fragment {
             itemViews.remove(position);
         }
 
-        public ListViewAdapter(List<Catalog> list) {
+       /* public ListViewAdapter(List<Catalog> list) {
             // TODO Auto-generated constructor stub
             for (int i = 0; i < list.size(); i++) {
-                Catalog getInfo = (Catalog) list.get(i);    //获取第i个对象
+                //Catalog getInfo = (Catalog) list.get(i);    //获取第i个对象
                 //调用makeItemView，实例化一个Item
-                itemViews.add(makeItemView(getInfo.getName(), getInfo.getName(), getInfo.getIcon()));
+                //itemViews.add(makeItemView(getInfo.getName(), getInfo.getName(), getInfo.getIcon()));
+                itemViews.add(null);
             }
-        }
+        }*/
 
         @Override
         public int getCount() {
@@ -322,7 +377,7 @@ public class FragmentCatalog extends Fragment {
         }
 
         //绘制Item的函数
-        private View makeItemView(String strTitle, String strText, int resId) {
+       /* private View makeItemView(String strTitle, String strText, int resId) {
             LayoutInflater inflater = (LayoutInflater) cont
                     .getSystemService(Context.LAYOUT_INFLATER_SERVICE);
             // 使用View的对象itemView与R.layout.item关联
@@ -335,7 +390,7 @@ public class FragmentCatalog extends Fragment {
             ImageView image = (ImageView) itemView.findViewById(R.id.catalog_img);
             image.setImageResource(resId);
             return itemView;
-        }
+        }*/
 
         @Override
         public int getSwipeLayoutResourceId(int i) {
@@ -346,24 +401,33 @@ public class FragmentCatalog extends Fragment {
         @Override
         public View generateView(int position, ViewGroup viewGroup) {
             //render a new item layout.
-            View v = LayoutInflater.from(cont).inflate(R.layout.listitem, null);
-            SwipeLayout swipeLayout = (SwipeLayout)v.findViewById(getSwipeLayoutResourceId(position));
+            LayoutInflater inflater = (LayoutInflater) cont
+                    .getSystemService(Context.LAYOUT_INFLATER_SERVICE);
+            View v = inflater.inflate(R.layout.listitem, null);
+            itemViews.set(position, v);
+            SwipeLayout swipeLayout = (SwipeLayout) v.findViewById(getSwipeLayoutResourceId(position));
             swipeLayout.addSwipeListener(new SimpleSwipeListener() {
                 @Override
                 public void onOpen(SwipeLayout layout) {
-                    YoYo.with(Techniques.Tada).duration(500).delay(100).playOn(layout.findViewById(R.id.trash));
+
                 }
             });
             swipeLayout.setOnDoubleClickListener(new SwipeLayout.DoubleClickListener() {
                 @Override
                 public void onDoubleClick(SwipeLayout layout, boolean surface) {
-                    Toast.makeText(mContext, "DoubleClick", Toast.LENGTH_SHORT).show();
+                    Toast.makeText(cont, "DoubleClick", Toast.LENGTH_SHORT).show();
                 }
             });
-            v.findViewById(R.id.delete).setOnClickListener(new View.OnClickListener() {
+            v.findViewById(R.id.listitem_tvdelete).setOnClickListener(new View.OnClickListener() {
                 @Override
                 public void onClick(View view) {
-                    Toast.makeText(mContext, "click delete", Toast.LENGTH_SHORT).show();
+                    Toast.makeText(cont, "click delete", Toast.LENGTH_SHORT).show();
+                }
+            });
+            v.findViewById(R.id.listitem_buttondelete).setOnClickListener(new View.OnClickListener() {
+                @Override
+                public void onClick(View v) {
+                    Toast.makeText(cont, "click button", Toast.LENGTH_SHORT).show();
                 }
             });
             return v;
@@ -373,7 +437,16 @@ public class FragmentCatalog extends Fragment {
         public void fillValues(int i, View view) {
 /*fill values to your item layout returned from `generateView`.
   The position param here is passed from the BaseAdapter's 'getView()*/
-
+            String strTitle = cataloglist.get(i).getName();
+            String strText = cataloglist.get(i).getName();
+            int resId = cataloglist.get(i).getIcon();
+            // 通过findViewById()方法实例R.layout.item内各组件
+            TextView title = (TextView) view.findViewById(R.id.title);
+            title.setText(strTitle);    //填入相应的值
+            TextView text = (TextView) view.findViewById(R.id.info);
+            text.setText(strText);
+            ImageView image = (ImageView) view.findViewById(R.id.catalog_img);
+            image.setImageResource(resId);
         }
 
 /*        @Override

@@ -13,6 +13,21 @@
         android:weightSum="1"
         android:layout_height="match_parent">
         <!--What you want to show-->
+        <TextView
+            android:id="@+id/listitem_tvdelete"
+            android:layout_width="wrap_content"
+            android:layout_height="match_parent"
+            android:layout_weight="5"
+            android:text="@string/deleteAsk"
+            android:textColor="#fff"
+            android:textSize="17sp" />
+        <Button
+            android:id="@+id/listitem_buttondelete"
+            android:layout_width="wrap_content"
+            android:layout_height="40dp"
+            android:layout_weight="4"
+            android:text="@string/delete"
+            android:textColor="#FF5534" />
     </LinearLayout>
     <!-- Bottom View End-->
 
