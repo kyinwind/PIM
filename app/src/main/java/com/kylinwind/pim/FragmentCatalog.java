@@ -53,8 +53,16 @@ public class FragmentCatalog extends Fragment {
 
     EditText etNewCatalog;
     ListViewAdapter lva;
-    String curCatalogName;
+    public String curCatalogName;
 
+
+    @Override
+    public void onCreate(Bundle savedInstanceState) {
+        super.onCreate(savedInstanceState);
+        //setContentView(R.layout.activity_main);
+        Log.d(TAG, "onCreate方法执行");
+
+    }
     @Override
     public void onAttach(Context context) {
         super.onAttach(context);
@@ -97,7 +105,7 @@ public class FragmentCatalog extends Fragment {
                 Toast.makeText(cont, msg, Toast.LENGTH_SHORT).show();
             }
         });
-        listView.setOnTouchListener(new View.OnTouchListener() {
+/*        listView.setOnTouchListener(new View.OnTouchListener() {
             @Override
             public boolean onTouch(View v, MotionEvent event) {
                 //Log.e("ListView", "OnTouch");
@@ -110,8 +118,8 @@ public class FragmentCatalog extends Fragment {
                 //Toast.makeText(cont, "OnItemLongClickListener", Toast.LENGTH_SHORT).show();
                 return true;
             }
-        });
-        listView.setOnScrollListener(new AbsListView.OnScrollListener() {
+        });*/
+/*        listView.setOnScrollListener(new AbsListView.OnScrollListener() {
             @Override
             public void onScrollStateChanged(AbsListView view, int scrollState) {
                 //Log.e("ListView", "onScrollStateChanged");
@@ -121,9 +129,9 @@ public class FragmentCatalog extends Fragment {
             public void onScroll(AbsListView view, int firstVisibleItem, int visibleItemCount, int totalItemCount) {
 
             }
-        });
+        });*/
 
-        listView.setOnItemSelectedListener(new AdapterView.OnItemSelectedListener() {
+/*        listView.setOnItemSelectedListener(new AdapterView.OnItemSelectedListener() {
             @Override
             public void onItemSelected(AdapterView<?> parent, View view, int position, long id) {
                 Log.e("ListView", "onItemSelected:" + position);
@@ -133,7 +141,7 @@ public class FragmentCatalog extends Fragment {
             public void onNothingSelected(AdapterView<?> parent) {
                 Log.e("ListView", "onNothingSelected:");
             }
-        });
+        });*/
         //长按菜单显示
 
         listView.setOnCreateContextMenuListener(new View.OnCreateContextMenuListener() {
@@ -199,6 +207,7 @@ public class FragmentCatalog extends Fragment {
 
     public void addCatalog() {
         etNewCatalog = new EditText(cont);
+        etNewCatalog.setSingleLine(true);
         new AlertDialog.Builder(cont).
                 setTitle("请输入新文件名称").
                 setIcon(android.R.drawable.ic_dialog_info).
@@ -234,7 +243,7 @@ public class FragmentCatalog extends Fragment {
         Log.d(TAG, c.toString());
         if (c.save()) {
             cataloglist.add(c);
-            lva.addItem(c.getName(), c.getName(), c.getIcon());
+            lva.addItem();
             this.lva.notifyDataSetChanged();
             CharSequence msg = "添加文件夹：" + name + "成功！";
             Toast.makeText(cont, msg, Toast.LENGTH_LONG).show();
@@ -306,19 +315,18 @@ public class FragmentCatalog extends Fragment {
     }
 
 
-    @Override
-    public void onCreate(Bundle savedInstanceState) {
-        super.onCreate(savedInstanceState);
-        //setContentView(R.layout.activity_main);
-        Log.d(TAG, "onCreate方法执行");
-
-    }
-
 
     public class ListViewAdapter extends BaseSwipeAdapter {
         List<View> itemViews = new ArrayList();
 
         private Context mContext;
+
+        @Override
+        public void notifyDataSetChanged() {
+            super.notifyDataSetChanged();
+            //把已经打开的swipelayout关闭
+            this.closeAllItems();
+        }
 
         public ListViewAdapter(Context mContext) {
             this.mContext = mContext;
@@ -329,7 +337,7 @@ public class FragmentCatalog extends Fragment {
                 itemViews.add(null);
             }
         }
-        public void addItem(String name, String info, int resid) {
+        public void addItem() {
             itemViews.add(null);
         }
 
@@ -406,6 +414,7 @@ public class FragmentCatalog extends Fragment {
             View v = inflater.inflate(R.layout.listitem, null);
             itemViews.set(position, v);
             SwipeLayout swipeLayout = (SwipeLayout) v.findViewById(getSwipeLayoutResourceId(position));
+
             swipeLayout.addSwipeListener(new SimpleSwipeListener() {
                 @Override
                 public void onOpen(SwipeLayout layout) {
@@ -415,21 +424,19 @@ public class FragmentCatalog extends Fragment {
             swipeLayout.setOnDoubleClickListener(new SwipeLayout.DoubleClickListener() {
                 @Override
                 public void onDoubleClick(SwipeLayout layout, boolean surface) {
-                    Toast.makeText(cont, "DoubleClick", Toast.LENGTH_SHORT).show();
+                    //Toast.makeText(cont, "DoubleClick", Toast.LENGTH_SHORT).show();
                 }
             });
             v.findViewById(R.id.listitem_tvdelete).setOnClickListener(new View.OnClickListener() {
                 @Override
                 public void onClick(View view) {
-                    Toast.makeText(cont, "click delete", Toast.LENGTH_SHORT).show();
+                    //Toast.makeText(cont, view.getTag().toString(), Toast.LENGTH_SHORT).show();
+                    //找到当前item的name
+                    curCatalogName = view.getTag().toString();
+                    delCatalog();
                 }
             });
-            v.findViewById(R.id.listitem_buttondelete).setOnClickListener(new View.OnClickListener() {
-                @Override
-                public void onClick(View v) {
-                    Toast.makeText(cont, "click button", Toast.LENGTH_SHORT).show();
-                }
-            });
+
             return v;
         }
 
@@ -441,12 +448,21 @@ public class FragmentCatalog extends Fragment {
             String strText = cataloglist.get(i).getName();
             int resId = cataloglist.get(i).getIcon();
             // 通过findViewById()方法实例R.layout.item内各组件
+            TextView tvDelete = (TextView) view.findViewById(R.id.listitem_tvdelete);
+
             TextView title = (TextView) view.findViewById(R.id.title);
             title.setText(strTitle);    //填入相应的值
             TextView text = (TextView) view.findViewById(R.id.info);
             text.setText(strText);
             ImageView image = (ImageView) view.findViewById(R.id.catalog_img);
             image.setImageResource(resId);
+            ViewHolder vh = new ViewHolder();
+            vh.setIv(image);
+            vh.setTvInfo(text);
+            vh.setTvTitle(title);
+            view.setTag(vh);
+            //往删除tv上保存当前文件夹名称
+            tvDelete.setTag(strTitle);
         }
 
 /*        @Override

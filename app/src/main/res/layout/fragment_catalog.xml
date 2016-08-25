@@ -21,7 +21,6 @@
             android:layout_height="fill_parent"
             android:layout_gravity="center"
             android:background="@drawable/textview_border_bottom"
-            android:editable="false"
             android:gravity="center_vertical|center_horizontal"
             android:text="@string/activity_main_title" />
 

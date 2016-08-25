@@ -1,0 +1,13 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <string-array name="entries_list_preference">
+        <item>Pittsburgh</item>
+        <item>Allentown/Bethlehem</item>
+        <item>Erie</item>
+    </string-array>
+    <string-array name="entriesvalues_list_preference">
+        <item>PHL</item>
+        <item>PIT</item>
+        <item>ABE</item>
+    </string-array>
+</resources>

@@ -9,25 +9,24 @@
     <LinearLayout
         android:background="#66ddff00"
         android:id="@+id/bottom_wrapper"
-        android:layout_width="160dp"
-        android:weightSum="1"
+        android:layout_width="80dp"
+        android:weightSum="10"
+        android:gravity="center"
         android:layout_height="match_parent">
         <!--What you want to show-->
+
         <TextView
             android:id="@+id/listitem_tvdelete"
             android:layout_width="wrap_content"
             android:layout_height="match_parent"
-            android:layout_weight="5"
-            android:text="@string/deleteAsk"
-            android:textColor="#fff"
-            android:textSize="17sp" />
-        <Button
-            android:id="@+id/listitem_buttondelete"
-            android:layout_width="wrap_content"
-            android:layout_height="40dp"
-            android:layout_weight="4"
+            android:layout_weight="10"
+            android:layout_gravity="center"
             android:text="@string/delete"
-            android:textColor="#FF5534" />
+            android:textColor="#fff"
+            android:background="#FF5534"
+            android:textSize="17sp"
+            android:gravity="center" />
+
     </LinearLayout>
     <!-- Bottom View End-->
 
