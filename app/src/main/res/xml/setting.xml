@@ -1,33 +1,43 @@
 <?xml version="1.0" encoding="utf-8"?>
 <PreferenceScreen xmlns:android="http://schemas.android.com/apk/res/android">
-    <PreferenceCategory android:title="In-line preferences" >
-        <CheckBoxPreference
-            android:key="checkbox_preference"
-            android:summary="这是一个复选框"
-            android:title="复选框设置" />
-    </PreferenceCategory>
-    <PreferenceCategory android:title="Dialog-based preferences" >
+    <PreferenceCategory android:title="账号安全" >
         <EditTextPreference
-            android:dialogTitle="请输入你最喜欢的种族"
-            android:key="edittext_preference"
-            android:summary="一个使用了编辑文本对话框的例子"
-            android:title="请输入你最喜欢的种族" />
+            android:dialogTitle="请输入您的用户名"
+            android:key="userName"
+            android:summary="该用户名用于您登录显示"
+            android:title="请输入您的用户名称，长度不超过20个字符" />
+        <CheckBoxPreference
+            android:key="patternlock_yesorno"
+            android:summary="建议启用"
+            android:title="是否启用锁屏密码登录"
+            android:defaultValue="false"/>
+        <PreferenceScreen
+            android:key="patternlock"
+            android:summary="请设置您的锁屏图案"
+            android:title="锁屏图案">
+            <intent
+                android:action="android.intent.action.VIEW"
+                android:data="http://www.baidu.com" />
+        </PreferenceScreen>
+    </PreferenceCategory>
+
+   <!-- <PreferenceCategory android:title="Dialog-based setting" >
 
         <ListPreference
             android:dialogTitle="请选择一项"
-            android:entries=""
-            android:entryValues="@settingu/entryvalues_list_preference"
+            android:entries="@array/entries_list_preference"
+            android:entryValues="@array/entriesvalues_list_preference"
             android:key="list_preferenc"
             android:summary="一个使用了列表对话框的例子"
             android:title="请选择一项" />
-    </PreferenceCategory>
-    <PreferenceCategory android:title="Launch preferences" >
-        <!-- This PreferenceScreen tag serves as a screen break (similar to page break in word processing). Like for other preference types, we assign a key here so it is able to save and restore its instance state. -->
+    </PreferenceCategory>-->
+    <!--<PreferenceCategory android:title="Launch setting" >
+        &lt;!&ndash; This PreferenceScreen tag serves as a screen break (similar to page break in word processing). Like for other preference types, we assign a key here so it is able to save and restore its instance state. &ndash;&gt;
         <PreferenceScreen
             android:key="screen_preference"
             android:summary="展示另一个首选项配置页面"
             android:title="页面首选项" >
-            <!-- 你可以在这里放置更多的首选项内容，将被在下一个页面呈现出来 -->
+            &lt;!&ndash; 你可以在这里放置更多的首选项内容，将被在下一个页面呈现出来 &ndash;&gt;
             <CheckBoxPreference
                 android:key="next_screen_checkbox_preference"
                 android:summary="在另一个页面展示但出于同一个层级的首选项配置"
@@ -46,12 +56,12 @@
             android:key="parent_checkbox_preference"
             android:summary="这是一个可见的父类"
             android:title="父类复选框首选项" />
-        <!-- 子类的可见类型是由样式属性定义的 -->
+        &lt;!&ndash; 子类的可见类型是由样式属性定义的 &ndash;&gt;
         <CheckBoxPreference
             android:dependency="parent_checkbox_preference"
             android:key="child_checkbox_preference"
             android:layout="?android:attr/preferenceLayoutChild"
             android:summary="这是一个可见的子类"
             android:title="子类复选框首选项" />
-    </PreferenceCategory>
+    </PreferenceCategory>-->
 </PreferenceScreen>

@@ -4,5 +4,14 @@
     <string name="temp_user">临时用户</string>
     <string name="delete">删   除</string>
     <string name="deleteAsk">是否确定删除？</string>
-
+    <string-array name="entries_list_preference">
+        <item>Pittsburgh</item>
+        <item>Allentown/Bethlehem</item>
+        <item>Erie</item>
+    </string-array>
+    <string-array name="entriesvalues_list_preference">
+        <item>PHL</item>
+        <item>PIT</item>
+        <item>ABE</item>
+    </string-array>
 </resources>

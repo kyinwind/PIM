@@ -1,24 +1,22 @@
 package com.kylinwind.pim;
 
+import android.app.Activity;
+import android.app.FragmentTransaction;
 import android.content.Context;
 import android.content.DialogInterface;
 import android.database.sqlite.SQLiteDatabase;
-import android.graphics.Color;
 import android.os.Bundle;
 import android.support.annotation.Nullable;
-import android.support.v4.app.Fragment;
+
+import android.app.Fragment;
 import android.support.v7.app.AlertDialog;
 import android.util.Log;
 import android.view.ContextMenu;
 import android.view.LayoutInflater;
 import android.view.MenuItem;
-import android.view.MotionEvent;
 import android.view.View;
 import android.view.ViewGroup;
-import android.widget.AbsListView;
 import android.widget.AdapterView;
-import android.widget.BaseAdapter;
-import android.widget.Button;
 import android.widget.EditText;
 import android.widget.ImageButton;
 import android.widget.ImageView;
@@ -36,21 +34,19 @@ import com.kylinwind.pim.model.SysUser;
 
 import org.litepal.crud.DataSupport;
 import org.litepal.tablemanager.Connector;
-import org.w3c.dom.Text;
 
 import java.util.ArrayList;
 import java.util.List;
-import java.util.Map;
 
 public class FragmentCatalog extends Fragment {
-    private static final String TAG = "FragmentCatalog";
-    private SQLiteDatabase db;
-    private ListView listView = null;
+        private static final String TAG = "FragmentCatalog";
+        private SQLiteDatabase db;
+        private ListView listView = null;
     private List<Catalog> cataloglist = new ArrayList<Catalog>();  //声明一个list，动态存储要显示的信
     public Context cont;
     private ImageButton ibAdd;
     private ImageButton ibDel;
-
+    private ImageView ibSetting;
     EditText etNewCatalog;
     ListViewAdapter lva;
     public String curCatalogName;
@@ -63,6 +59,7 @@ public class FragmentCatalog extends Fragment {
         Log.d(TAG, "onCreate方法执行");
 
     }
+
     @Override
     public void onAttach(Context context) {
         super.onAttach(context);
@@ -76,6 +73,8 @@ public class FragmentCatalog extends Fragment {
         listView = (ListView) v.findViewById(R.id.listView);    //将listView与布局对象关联
         ibAdd = (ImageButton) v.findViewById(R.id.ibAdd);
         ibDel = (ImageButton) v.findViewById(R.id.ibDel);
+        ibSetting = (ImageButton) v.findViewById(R.id.ibSetting);
+
         //初始化数据库，创建数据库或获得一个数据库
         db = Connector.getDatabase();
         Log.d(TAG, "Connector.getDatabase执行");
@@ -96,12 +95,12 @@ public class FragmentCatalog extends Fragment {
             @Override
             public void onItemClick(AdapterView<?> adapterView, View view, int i, long l) {
 
-               // ((SwipeLayout) (listView.getChildAt(i - listView.getFirstVisiblePosition()))).open(true);
+                // ((SwipeLayout) (listView.getChildAt(i - listView.getFirstVisiblePosition()))).open(true);
                 Catalog c = cataloglist.get(i);   //通过position获取所点击的对象
                 String infoTitle = c.getName();    //获取信息标题
                 String infoDetails = c.getName();    //获取信息详情
                 //Toast显示测试
-               CharSequence msg = "信息:" + infoTitle + " , " + infoDetails;
+                CharSequence msg = "信息:" + infoTitle + " , " + infoDetails;
                 Toast.makeText(cont, msg, Toast.LENGTH_SHORT).show();
             }
         });
@@ -162,6 +161,24 @@ public class FragmentCatalog extends Fragment {
                     }
                 }
         );
+        ibSetting.setOnClickListener(new View.OnClickListener() {
+            public void onClick(View v) {
+                Context context = v.getContext();
+                if (context instanceof MainActivity) {
+
+                    FragmentTransaction t = getFragmentManager().beginTransaction();
+                    PrefsFragment f = new PrefsFragment();
+                    // Replace whatever is in the fragment_container view with this fragment,
+                    // and add the transaction to the back stack
+                    // transaction.replace(R.id.fragment_container, newFragment);
+                    // transaction.addToBackStack(null);
+                    // Commit the transaction  transaction.commit();
+                    t.replace(R.id.fragment_container, f);
+                    t.addToBackStack(null);
+                    t.commit();
+                }
+            }
+        });
 
         //设置焦点
         listView.setFocusable(true);
@@ -315,7 +332,6 @@ public class FragmentCatalog extends Fragment {
     }
 
 
-
     public class ListViewAdapter extends BaseSwipeAdapter {
         List<View> itemViews = new ArrayList();
 
@@ -337,6 +353,7 @@ public class FragmentCatalog extends Fragment {
                 itemViews.add(null);
             }
         }
+
         public void addItem() {
             itemViews.add(null);
         }
