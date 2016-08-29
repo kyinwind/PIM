@@ -1,5 +1,6 @@
 package com.kylinwind.pim;
 
+import android.content.Intent;
 import android.content.SharedPreferences;
 import android.os.Bundle;
 import android.preference.CheckBoxPreference;
@@ -15,6 +16,7 @@ import android.preference.PreferenceScreen;
 public class PrefsFragment extends PreferenceFragment implements android.content.SharedPreferences.OnSharedPreferenceChangeListener {
     public static String TAG = "PrefsFragment";
     private EditTextPreference uname;
+    private String patternstr = "";
 
     @Override
     public void onCreate(Bundle savedInstanceState) {
@@ -34,8 +36,10 @@ public class PrefsFragment extends PreferenceFragment implements android.content
         PreferenceScreen patternlock = (PreferenceScreen) findPreference("patternlock");
         patternlock.setEnabled(b);
         //Log.d(TAG, "锁屏图案Enabled：" + Boolean.valueOf(b).toString());
-        uname = (EditTextPreference)getPreferenceScreen().findPreference("userName");
+        uname = (EditTextPreference) getPreferenceScreen().findPreference("userName");
 
+        //如果锁屏图案已经存在，就取出来
+        patternstr = sharedPreferences.getString("patternlock_string","");
     }
 
     @Override
@@ -48,7 +52,15 @@ public class PrefsFragment extends PreferenceFragment implements android.content
             //让editTextPreference和checkBoxPreference的状态保持一致
             patternlock.setEnabled(patternlock_yesorno.isChecked());
         }
+        if ("patternlock".equals(preference.getKey())) {
+            //打开图案设置窗口
+            Intent intent = new Intent(getActivity(), MySetPatternActivity.class);
+            Bundle bundle = new Bundle();
 
+            bundle.putString("pattern", patternstr);
+            intent.putExtras(bundle);
+            getActivity().startActivityForResult(intent, 0);//打开新的activity
+        }
         return super.onPreferenceTreeClick(preferenceScreen, preference);
     }
 
@@ -65,7 +77,7 @@ public class PrefsFragment extends PreferenceFragment implements android.content
     public void InitTextSummary() {
 
 
-        if (uname.getText().equals("")) {
+        if (uname.getText() == null || uname.getText().equals("")) {
             uname.setSummary("该用户名用于您登录显示");
         } else {
             uname.setSummary(uname.getText());

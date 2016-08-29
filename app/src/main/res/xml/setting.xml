@@ -1,36 +1,33 @@
 <?xml version="1.0" encoding="utf-8"?>
 <PreferenceScreen xmlns:android="http://schemas.android.com/apk/res/android">
-    <PreferenceCategory android:title="账号安全" >
+    <PreferenceCategory android:title="账号安全">
         <EditTextPreference
             android:dialogTitle="请输入您的用户名"
             android:key="userName"
             android:summary="该用户名用于您登录显示"
             android:title="请输入您的用户名称，长度不超过20个字符" />
         <CheckBoxPreference
+            android:defaultValue="false"
             android:key="patternlock_yesorno"
             android:summary="建议启用"
-            android:title="是否启用锁屏密码登录"
-            android:defaultValue="false"/>
+            android:title="是否启用锁屏密码登录" />
         <PreferenceScreen
             android:key="patternlock"
             android:summary="请设置您的锁屏图案"
             android:title="锁屏图案">
-            <intent
-                android:action="android.intent.action.VIEW"
-                android:data="http://www.baidu.com" />
         </PreferenceScreen>
     </PreferenceCategory>
 
-   <!-- <PreferenceCategory android:title="Dialog-based setting" >
+    <!-- <PreferenceCategory android:title="Dialog-based setting" >
 
-        <ListPreference
-            android:dialogTitle="请选择一项"
-            android:entries="@array/entries_list_preference"
-            android:entryValues="@array/entriesvalues_list_preference"
-            android:key="list_preferenc"
-            android:summary="一个使用了列表对话框的例子"
-            android:title="请选择一项" />
-    </PreferenceCategory>-->
+         <ListPreference
+             android:dialogTitle="请选择一项"
+             android:entries="@array/entries_list_preference"
+             android:entryValues="@array/entriesvalues_list_preference"
+             android:key="list_preferenc"
+             android:summary="一个使用了列表对话框的例子"
+             android:title="请选择一项" />
+     </PreferenceCategory>-->
     <!--<PreferenceCategory android:title="Launch setting" >
         &lt;!&ndash; This PreferenceScreen tag serves as a screen break (similar to page break in word processing). Like for other preference types, we assign a key here so it is able to save and restore its instance state. &ndash;&gt;
         <PreferenceScreen

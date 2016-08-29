@@ -5,7 +5,10 @@ import android.app.Activity;
 import android.app.Fragment;
 import android.app.FragmentManager;
 import android.app.FragmentTransaction;
+import android.content.Intent;
+import android.content.SharedPreferences;
 import android.os.Bundle;
+import android.preference.PreferenceManager;
 import android.util.Log;
 
 public class MainActivity extends Activity {
@@ -26,6 +29,24 @@ public class MainActivity extends Activity {
             ft.add(R.id.fragment_container, fragment);
             ft.addToBackStack(null);
             ft.commit();
+        }
+    }
+
+    @Override
+    protected void onActivityResult(int requestCode, int resultCode, Intent data) {
+        //super.onActivityResult(requestCode, resultCode, data);
+        //获得图案
+        switch (resultCode) { //resultCode为回传的标记，我在B中回传的是RESULT_OK
+            case RESULT_OK:
+                Bundle b = data.getExtras(); //data为B中回传的Intent
+                String patternstr = b.getString("pattern");//str即为回传的值
+                SharedPreferences sharedPreferences = PreferenceManager.getDefaultSharedPreferences(this);
+                SharedPreferences.Editor editor = sharedPreferences.edit();
+                editor.putString("patternlock_string", patternstr);
+                editor.commit();
+                break;
+            default:
+                break;
         }
     }
 

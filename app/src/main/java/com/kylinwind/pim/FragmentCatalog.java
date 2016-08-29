@@ -99,6 +99,8 @@ public class FragmentCatalog extends Fragment {
                 Catalog c = cataloglist.get(i);   //通过position获取所点击的对象
                 String infoTitle = c.getName();    //获取信息标题
                 String infoDetails = c.getName();    //获取信息详情
+                //把已经打开的swipelayout关闭
+                ((ListViewAdapter)listView.getAdapter()).closeAllItems();
                 //Toast显示测试
                 CharSequence msg = "信息:" + infoTitle + " , " + infoDetails;
                 Toast.makeText(cont, msg, Toast.LENGTH_SHORT).show();
