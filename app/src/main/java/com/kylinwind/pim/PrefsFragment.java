@@ -1,20 +1,20 @@
 package com.kylinwind.pim;
 
-import android.content.Context;
 import android.content.SharedPreferences;
 import android.os.Bundle;
 import android.preference.CheckBoxPreference;
+import android.preference.EditTextPreference;
 import android.preference.Preference;
 import android.preference.PreferenceFragment;
 import android.preference.PreferenceManager;
 import android.preference.PreferenceScreen;
-import android.util.Log;
 
 /**
  * Created by yangx on 2016/8/25.
  */
-public class PrefsFragment extends PreferenceFragment {
+public class PrefsFragment extends PreferenceFragment implements android.content.SharedPreferences.OnSharedPreferenceChangeListener {
     public static String TAG = "PrefsFragment";
+    private EditTextPreference uname;
 
     @Override
     public void onCreate(Bundle savedInstanceState) {
@@ -34,6 +34,8 @@ public class PrefsFragment extends PreferenceFragment {
         PreferenceScreen patternlock = (PreferenceScreen) findPreference("patternlock");
         patternlock.setEnabled(b);
         //Log.d(TAG, "锁屏图案Enabled：" + Boolean.valueOf(b).toString());
+        uname = (EditTextPreference)getPreferenceScreen().findPreference("userName");
+
     }
 
     @Override
@@ -48,5 +50,40 @@ public class PrefsFragment extends PreferenceFragment {
         }
 
         return super.onPreferenceTreeClick(preferenceScreen, preference);
+    }
+
+    @Override
+    public void onSharedPreferenceChanged(SharedPreferences sharedPreferences, String key) {
+        /* get preference */
+
+        if (key.equals("userName")) {
+            InitTextSummary();
+        }
+    }
+
+
+    public void InitTextSummary() {
+
+
+        if (uname.getText().equals("")) {
+            uname.setSummary("该用户名用于您登录显示");
+        } else {
+            uname.setSummary(uname.getText());
+        }
+    }
+
+
+    @Override
+    public void onResume() {
+        super.onResume();
+
+        InitTextSummary();
+        getPreferenceManager().getSharedPreferences().registerOnSharedPreferenceChangeListener(this);
+    }
+
+    @Override
+    public void onPause() {
+        getPreferenceManager().getSharedPreferences().unregisterOnSharedPreferenceChangeListener(this);
+        super.onPause();
     }
 }
