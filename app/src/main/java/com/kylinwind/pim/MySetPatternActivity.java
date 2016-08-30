@@ -1,7 +1,9 @@
 package com.kylinwind.pim;
 
 import android.content.Intent;
+import android.content.SharedPreferences;
 import android.os.Bundle;
+import android.preference.PreferenceManager;
 import android.widget.Toast;
 
 import java.util.List;
@@ -22,12 +24,10 @@ public class MySetPatternActivity extends SetPatternActivity {
         // TODO: Save patternSha1 in SharedPreferences.
         CharSequence msg = "图案:" + patternstr ;
         Toast.makeText(this, msg, Toast.LENGTH_LONG).show();
-        Bundle bundle = new Bundle();
-        Intent intent=new Intent();
-        bundle.putString("pattern", patternstr);
-        intent.putExtras(bundle);
-        setResult(RESULT_OK, intent); //intent为A传来的带有Bundle的intent，当然也可以自己定义新的Bundle
-        finish();//此处一定要调用finish()方法
+        SharedPreferences sharedPreferences = PreferenceManager.getDefaultSharedPreferences(this);
+        SharedPreferences.Editor editor = sharedPreferences.edit();
+        editor.putString("patternlock_string", patternstr);
+        editor.commit();
     }
 
 

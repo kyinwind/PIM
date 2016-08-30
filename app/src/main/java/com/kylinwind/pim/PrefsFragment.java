@@ -39,7 +39,7 @@ public class PrefsFragment extends PreferenceFragment implements android.content
         uname = (EditTextPreference) getPreferenceScreen().findPreference("userName");
 
         //如果锁屏图案已经存在，就取出来
-        patternstr = sharedPreferences.getString("patternlock_string","");
+        patternstr = sharedPreferences.getString("patternlock_string", "");
     }
 
     @Override
@@ -56,10 +56,9 @@ public class PrefsFragment extends PreferenceFragment implements android.content
             //打开图案设置窗口
             Intent intent = new Intent(getActivity(), MySetPatternActivity.class);
             Bundle bundle = new Bundle();
-
             bundle.putString("pattern", patternstr);
             intent.putExtras(bundle);
-            getActivity().startActivityForResult(intent, 0);//打开新的activity
+            this.startActivity(intent);//打开新的activity
         }
         return super.onPreferenceTreeClick(preferenceScreen, preference);
     }

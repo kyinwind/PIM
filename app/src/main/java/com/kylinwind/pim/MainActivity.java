@@ -14,7 +14,6 @@ import android.util.Log;
 public class MainActivity extends Activity {
     private static String TAG = "MainActivity";
 
-
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -30,9 +29,28 @@ public class MainActivity extends Activity {
             ft.addToBackStack(null);
             ft.commit();
         }
+
+        //检查一下是否已经设置解锁密码，如果没有设置，那么就启动设置界面
+        SharedPreferences sharedPreferences = PreferenceManager.getDefaultSharedPreferences(this);
+        //检查偏好里面是否设置了图案解锁，默认是需要
+        Boolean b = sharedPreferences.getBoolean("patternlock_yesorno", true);
+        //检查是否保存了解锁密码
+        String password = sharedPreferences.getString("patternlock_string", "");
+        if (b.booleanValue()) {
+            //如果还未设置密码，那么开始设置密码
+            if (password.equals("")) {
+                Intent intent = new Intent(this, MySetPatternActivity.class);
+                this.startActivity(intent);
+            } else {
+                //如果已经设置了密码，那么验证一下
+                Intent intent = new Intent(this, MyConfirmPatternActivity.class);
+                this.startActivity(intent);
+            }
+
+        }
     }
 
-    @Override
+    /*@Override
     protected void onActivityResult(int requestCode, int resultCode, Intent data) {
         //super.onActivityResult(requestCode, resultCode, data);
         //获得图案
@@ -48,7 +66,7 @@ public class MainActivity extends Activity {
             default:
                 break;
         }
-    }
+    }*/
 
     @Override
     protected void onStart() {
@@ -68,6 +86,10 @@ public class MainActivity extends Activity {
         Log.d(TAG, "onResume方法执行");
     }
 
+    @Override
+    protected void onResume() {
+        super.onResume();
+    }
 
     @Override
     protected void onStop() {
@@ -80,5 +102,4 @@ public class MainActivity extends Activity {
         super.onDestroy();
         Log.d(TAG, "onDestroy方法执行");
     }
-
 }
