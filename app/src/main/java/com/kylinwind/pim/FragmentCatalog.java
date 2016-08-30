@@ -1,6 +1,7 @@
 package com.kylinwind.pim;
 
 import android.app.Activity;
+import android.app.FragmentManager;
 import android.app.FragmentTransaction;
 import android.content.Context;
 import android.content.DialogInterface;
@@ -39,9 +40,9 @@ import java.util.ArrayList;
 import java.util.List;
 
 public class FragmentCatalog extends Fragment {
-        private static final String TAG = "FragmentCatalog";
-        private SQLiteDatabase db;
-        private ListView listView = null;
+    private static final String TAG = "FragmentCatalog";
+    private SQLiteDatabase db;
+    private ListView listView = null;
     private List<Catalog> cataloglist = new ArrayList<Catalog>();  //声明一个list，动态存储要显示的信
     public Context cont;
     private ImageButton ibAdd;
@@ -51,6 +52,7 @@ public class FragmentCatalog extends Fragment {
     ListViewAdapter lva;
     public String curCatalogName;
 
+    FragmentBank fragmentBank = new FragmentBank();
 
     @Override
     public void onCreate(Bundle savedInstanceState) {
@@ -100,10 +102,22 @@ public class FragmentCatalog extends Fragment {
                 String infoTitle = c.getName();    //获取信息标题
                 String infoDetails = c.getName();    //获取信息详情
                 //把已经打开的swipelayout关闭
-                ((ListViewAdapter)listView.getAdapter()).closeAllItems();
+                ((ListViewAdapter) listView.getAdapter()).closeAllItems();
                 //Toast显示测试
                 CharSequence msg = "信息:" + infoTitle + " , " + infoDetails;
                 Toast.makeText(cont, msg, Toast.LENGTH_SHORT).show();
+                //显示详细信息
+                FragmentManager fm;
+                FragmentTransaction ft;
+                fm = getFragmentManager();
+                Fragment fragment = fm.findFragmentById(R.id.fragment_container);
+                fragmentBank = new FragmentBank();
+                ft = fm.beginTransaction();
+                ft.add(R.id.fragment_container, fragmentBank);
+                ft.addToBackStack(null);
+                ft.commit();
+
+
             }
         });
 /*        listView.setOnTouchListener(new View.OnTouchListener() {
