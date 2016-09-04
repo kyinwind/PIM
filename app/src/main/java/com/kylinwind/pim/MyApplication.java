@@ -28,6 +28,22 @@ public class MyApplication extends LitePalApplication {
     private Timer mTimer = null;
     private TimerTask mTimerTask = null;
     public Activity curActivity = null;
+
+    public SQLiteDatabase db = null;
+
+    public SQLiteDatabase getDb() {
+        if (db == null) {
+            //初始化数据库，创建数据库或获得一个数据库
+            SQLiteDatabase db = Connector.getDatabase();
+            Log.d(TAG, "Connector.getDatabase执行");
+        }
+        return db;
+    }
+
+    public void setDb(SQLiteDatabase db) {
+        this.db = db;
+    }
+
     //记录下来用户登录的最近的时间，用于控制是否需要解锁登录
     private static Calendar c = Calendar.getInstance();
 
@@ -128,9 +144,14 @@ public class MyApplication extends LitePalApplication {
             refreshTime();
             this.startActivity(intent);
             Log.d(TAG, "需要启动解锁界面。。。");
-        } else {
-            Log.d(TAG, "不需要启动解锁界面 class a：" + this.curActivity.getClass().getName());
-            Log.d(TAG, "不需要启动解锁界面 s：" + new Long(s).toString());
+        } else if (this.curActivity == null) {
+            //如果还未有设置当前curActivity值那么返回
+            return;
+            //Log.d(TAG, "不需要启动解锁界面 class a：" + this.curActivity.getClass().getName());
+            //Log.d(TAG, "不需要启动解锁界面 s：" + new Long(s).toString());
+        } else if (this.curActivity.getClass() == MySetPatternActivity.class) {
+            //如果正在设置密码，那么也返回
+            return;
         }
     }
 

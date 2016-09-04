@@ -1,0 +1,68 @@
+<?xml version="1.0" encoding="utf-8"?>
+<com.daimajia.swipe.SwipeLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:orientation="horizontal"
+    android:id="@+id/swipe">
+
+    <!-- Bottom View Start-->
+    <LinearLayout
+        android:background="#66ddff00"
+        android:id="@+id/bottom_wrapper"
+        android:layout_width="80dp"
+        android:weightSum="10"
+        android:gravity="center"
+        android:layout_height="match_parent">
+        <!--What you want to show-->
+
+        <TextView
+            android:id="@+id/listitem_tvdelete"
+            android:layout_width="wrap_content"
+            android:layout_height="match_parent"
+            android:layout_weight="10"
+            android:layout_gravity="center"
+            android:text="@string/delete"
+            android:textColor="#fff"
+            android:background="#FF5534"
+            android:textSize="17sp"
+            android:gravity="center" />
+
+    </LinearLayout>
+    <!-- Bottom View End-->
+
+    <!-- Surface View Start -->
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:background="#ffffff"
+        android:padding="10dp">
+
+        <ImageView
+            android:id="@+id/catalog_img"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_weight="1"
+            android:src="@mipmap/catalog" />
+
+        <LinearLayout
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:orientation="vertical">
+
+            <TextView
+                android:id="@+id/title"
+                android:layout_width="242dp"
+                android:layout_height="wrap_content"
+                android:text="标题"
+                android:textAppearance="?android:attr/textAppearanceMedium" />
+
+            <TextView
+                android:id="@+id/info"
+                android:layout_width="match_parent"
+                android:layout_height="47dp"
+                android:text="信息" />
+
+        </LinearLayout>
+    </LinearLayout>
+    <!-- Surface View End -->
+</com.daimajia.swipe.SwipeLayout>

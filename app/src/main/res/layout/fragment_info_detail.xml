@@ -16,6 +16,7 @@
     <LinearLayout
         android:orientation="horizontal"
         android:layout_width="match_parent"
+        android:background="@drawable/textview_border_bottom"
         android:layout_height="40dp">
 
         <ImageButton
@@ -23,7 +24,7 @@
             android:layout_height="match_parent"
             android:layout_gravity="left"
             android:src = "@mipmap/back"
-            android:id="@+id/ibBackFromBankInfo" />
+            android:id="@+id/ibBackFromInfoDetail" />
     </LinearLayout>
 
     <ListView
@@ -35,33 +36,4 @@
         android:background="@drawable/textview_border_bottom"
         android:choiceMode="singleChoice" />
 
-    <LinearLayout
-        android:layout_width="match_parent"
-        android:layout_height="40dp"
-        android:orientation="horizontal"
-        android:weightSum="1">
-
-        <ImageButton
-            android:id="@+id/ibAdd"
-            android:layout_width="40dp"
-            android:layout_height="match_parent"
-            android:layout_gravity="left"
-            android:saveEnabled="false"
-            android:scaleType="fitCenter"
-            android:src="@mipmap/add" />
-
-        <TextView
-            android:id="@+id/tvInfo"
-            android:layout_width="wrap_content"
-            android:layout_height="match_parent"
-            android:layout_weight="1" />
-
-        <ImageButton
-            android:id="@+id/ibDel"
-            android:layout_width="40dp"
-            android:layout_height="match_parent"
-            android:layout_gravity="right"
-            android:scaleType="fitCenter"
-            android:src="@mipmap/delete" />
-    </LinearLayout>
 </LinearLayout>

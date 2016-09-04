@@ -1,6 +1,5 @@
 package com.kylinwind.pim;
 
-import android.app.Activity;
 import android.app.FragmentManager;
 import android.app.FragmentTransaction;
 import android.content.Context;
@@ -41,7 +40,6 @@ import java.util.List;
 
 public class FragmentCatalog extends Fragment {
     private static final String TAG = "FragmentCatalog";
-    private SQLiteDatabase db;
     private ListView listView = null;
     private List<Catalog> cataloglist = new ArrayList<Catalog>();  //声明一个list，动态存储要显示的信
     public Context cont;
@@ -52,12 +50,11 @@ public class FragmentCatalog extends Fragment {
     ListViewAdapter lva;
     public String curCatalogName;
 
-    FragmentBank fragmentBank = new FragmentBank();
+    FragmentInfoList fragmentInfoList = new FragmentInfoList();
 
     @Override
     public void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        //setContentView(R.layout.activity_main);
         Log.d(TAG, "onCreate方法执行");
 
     }
@@ -78,8 +75,7 @@ public class FragmentCatalog extends Fragment {
         ibSetting = (ImageButton) v.findViewById(R.id.ibSetting);
 
         //初始化数据库，创建数据库或获得一个数据库
-        db = Connector.getDatabase();
-        Log.d(TAG, "Connector.getDatabase执行");
+        ((MyApplication)getActivity().getApplication()).getDb();
         //初始化用户和目录数据
         initData();
 
@@ -109,11 +105,11 @@ public class FragmentCatalog extends Fragment {
                 //显示详细信息
                 FragmentManager fm;
                 FragmentTransaction ft;
-                fm = getFragmentManager();
-                Fragment fragment = fm.findFragmentById(R.id.fragment_container);
-                fragmentBank = new FragmentBank();
+                fm = getActivity().getFragmentManager();
+                FragmentInfoList fragment = new FragmentInfoList();
+                fragment.setIcon(c.getIcon());
                 ft = fm.beginTransaction();
-                ft.add(R.id.fragment_container, fragmentBank);
+                ft.replace(R.id.fragment_container, fragment);
                 ft.addToBackStack(null);
                 ft.commit();
 
@@ -422,7 +418,7 @@ public class FragmentCatalog extends Fragment {
             LayoutInflater inflater = (LayoutInflater) cont
                     .getSystemService(Context.LAYOUT_INFLATER_SERVICE);
             // 使用View的对象itemView与R.layout.item关联
-            View itemView = inflater.inflate(R.layout.listitem, null);
+            View itemView = inflater.inflate(R.layout.listitem_catalog, null);
             // 通过findViewById()方法实例R.layout.item内各组件
             TextView title = (TextView) itemView.findViewById(R.id.title);
             title.setText(strTitle);    //填入相应的值
@@ -444,7 +440,7 @@ public class FragmentCatalog extends Fragment {
             //render a new item layout.
             LayoutInflater inflater = (LayoutInflater) cont
                     .getSystemService(Context.LAYOUT_INFLATER_SERVICE);
-            View v = inflater.inflate(R.layout.listitem, null);
+            View v = inflater.inflate(R.layout.listitem_catalog, null);
             itemViews.set(position, v);
             SwipeLayout swipeLayout = (SwipeLayout) v.findViewById(getSwipeLayoutResourceId(position));
 
@@ -522,36 +518,6 @@ public class FragmentCatalog extends Fragment {
             }
         }*/
 
-    }
-
-    public class ViewHolder {
-        public ImageView iv;
-        public TextView tvTitle;
-        public TextView tvInfo;
-
-        public ImageView getIv() {
-            return iv;
-        }
-
-        public void setIv(ImageView iv) {
-            this.iv = iv;
-        }
-
-        public TextView getTvTitle() {
-            return tvTitle;
-        }
-
-        public void setTvTitle(TextView tvTitle) {
-            this.tvTitle = tvTitle;
-        }
-
-        public TextView getTvInfo() {
-            return tvInfo;
-        }
-
-        public void setTvInfo(TextView tvInfo) {
-            this.tvInfo = tvInfo;
-        }
     }
 
     //如果是第一次运行，那么初始化数据
