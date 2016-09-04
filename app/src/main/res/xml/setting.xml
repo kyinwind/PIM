@@ -11,6 +11,12 @@
             android:key="patternlock_yesorno"
             android:summary="建议启用"
             android:title="是否启用锁屏密码登录" />
+        <EditTextPreference
+            android:defaultValue="120"
+            android:dialogTitle="请输入锁屏间隔时间，单位：秒"
+            android:key="time"
+            android:summary="应用空闲无操作多少秒开始锁屏"
+            android:title="请输入锁屏间隔时间，单位：秒" />
         <PreferenceScreen
             android:key="patternlock"
             android:summary="请设置您的锁屏图案"

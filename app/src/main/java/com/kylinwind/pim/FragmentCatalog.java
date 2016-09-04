@@ -75,7 +75,7 @@ public class FragmentCatalog extends Fragment {
         ibSetting = (ImageButton) v.findViewById(R.id.ibSetting);
 
         //初始化数据库，创建数据库或获得一个数据库
-        ((MyApplication)getActivity().getApplication()).getDb();
+        ((MyApplication) getActivity().getApplication()).getDb();
         //初始化用户和目录数据
         initData();
 
@@ -266,7 +266,7 @@ public class FragmentCatalog extends Fragment {
         c.setOrd(0);
         c.setType("catalog");
         c.setIcon(c.getIcon());
-        c.setCatalog_id(c.getMaxCatalogIdPlus1());
+        c.setId(c.getMaxCatalogIdPlus1());
         c.setUp_catalog_id(0);
         c.setName(name);
         Log.d(TAG, c.toString());
@@ -294,7 +294,7 @@ public class FragmentCatalog extends Fragment {
             }
         }
         if (c != null) {
-            if (c.getCatalog_id() <= 3) {
+            if (c.getId() <= 3) {
                 Toast.makeText(cont, "您不能删除应用默认文件夹！", Toast.LENGTH_LONG).show();
                 return;
             }
@@ -321,7 +321,7 @@ public class FragmentCatalog extends Fragment {
                                 }
                             }
                             //检查是否有对应的personnalInfo记录，如果有则不允许删除
-                            int count = DataSupport.where("catalog_id = ?", String.valueOf(c.getCatalog_id())).count(PersonalInfo.class);
+                            int count = DataSupport.where("catalog_id = ?", String.valueOf(c.getId())).count(PersonalInfo.class);
                             if (count > 0) {
                                 Toast.makeText(cont, "您删除的文件夹还有账号记录，请先删除账号记录再删除文件夹！", Toast.LENGTH_LONG).show();
                                 return;
@@ -539,14 +539,14 @@ public class FragmentCatalog extends Fragment {
         Catalog c1 = new Catalog();
         Catalog c2 = new Catalog();
         Catalog c3 = new Catalog();
-        c1.setCatalog_id(1);
+        c1.setId(1);
         c1.setUp_catalog_id(0);
         c1.setIcon(R.mipmap.bank);
         c1.setName("银行账号");
         c1.setOrd(0);
         c1.setType("bank");
 
-        c2.setCatalog_id(2);
+        c2.setId(2);
         c2.setUp_catalog_id(0);
         c2.setIcon(R.mipmap.website);
         c2.setName("网站账号");
@@ -554,7 +554,7 @@ public class FragmentCatalog extends Fragment {
         c2.setType("website");
 
 
-        c3.setCatalog_id(3);
+        c3.setId(3);
         c3.setUp_catalog_id(0);
         c3.setIcon(R.mipmap.catalog);
         c3.setName("其他");

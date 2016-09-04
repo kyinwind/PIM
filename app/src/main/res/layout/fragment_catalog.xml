@@ -35,7 +35,7 @@
                 android:layout_alignParentRight="false"
                 android:layout_toLeftOf="@+id/ibUser"
                 android:scaleType="fitCenter"
-                android:src="@mipmap/setting2" />
+                android:background="@mipmap/setting2" />
 
             <ImageButton
                 android:id="@+id/ibUser"
@@ -43,7 +43,7 @@
                 android:layout_height="match_parent"
                 android:layout_alignParentRight="true"
                 android:scaleType="fitCenter"
-                android:src="@mipmap/user" />
+                android:background="@mipmap/user" />
         </RelativeLayout>
     </FrameLayout>
 
@@ -99,7 +99,7 @@
             android:layout_gravity="left"
             android:saveEnabled="false"
             android:scaleType="fitCenter"
-            android:src="@mipmap/add" />
+            android:background="@mipmap/add" />
 
         <TextView
             android:id="@+id/tvInfo"
@@ -113,7 +113,7 @@
             android:layout_height="match_parent"
             android:layout_gravity="right"
             android:scaleType="fitCenter"
-            android:src="@mipmap/delete" />
+            android:background="@mipmap/delete" />
     </LinearLayout>
 
 </LinearLayout>

@@ -17,6 +17,7 @@ public class PrefsFragment extends PreferenceFragment implements android.content
     public static String TAG = "PrefsFragment";
     private EditTextPreference uname;
     private String patternstr = "";
+    private EditTextPreference time;
 
     @Override
     public void onCreate(Bundle savedInstanceState) {
@@ -40,6 +41,10 @@ public class PrefsFragment extends PreferenceFragment implements android.content
 
         //如果锁屏图案已经存在，就取出来
         patternstr = sharedPreferences.getString("patternlock_string", "");
+
+        //如果锁屏间隔已经有数据，就取出来显示
+        time = (EditTextPreference) getPreferenceScreen().findPreference("time");
+        time.setEnabled(b);
     }
 
     @Override
@@ -51,6 +56,8 @@ public class PrefsFragment extends PreferenceFragment implements android.content
             PreferenceScreen patternlock = (PreferenceScreen) findPreference("patternlock");
             //让editTextPreference和checkBoxPreference的状态保持一致
             patternlock.setEnabled(patternlock_yesorno.isChecked());
+            EditTextPreference time = (EditTextPreference) findPreference("time");
+            time.setEnabled(patternlock_yesorno.isChecked());
         }
         if ("patternlock".equals(preference.getKey())) {
             //打开图案设置窗口
@@ -67,22 +74,24 @@ public class PrefsFragment extends PreferenceFragment implements android.content
     public void onSharedPreferenceChanged(SharedPreferences sharedPreferences, String key) {
         /* get preference */
 
-        if (key.equals("userName")) {
+        if (key.equals("userName") || key.equals("time")) {
             InitTextSummary();
         }
     }
 
-
-    public void InitTextSummary() {
-
-
+    public void InitTextSummary()
+    {
         if (uname.getText() == null || uname.getText().equals("")) {
             uname.setSummary("该用户名用于您登录显示");
         } else {
             uname.setSummary(uname.getText());
         }
+        if (time.getText() == null || time.getText().equals("")) {
+            time.setSummary("应用空闲无操作锁屏间隔时间。单位：秒");
+        } else {
+            time.setSummary(time.getText());
+        }
     }
-
 
     @Override
     public void onResume() {

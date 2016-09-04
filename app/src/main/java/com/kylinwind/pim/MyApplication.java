@@ -3,8 +3,10 @@ package com.kylinwind.pim;
 import android.app.Activity;
 import android.app.admin.SystemUpdatePolicy;
 import android.content.Intent;
+import android.content.SharedPreferences;
 import android.database.sqlite.SQLiteDatabase;
 import android.os.Bundle;
+import android.preference.PreferenceManager;
 import android.util.Log;
 import android.widget.Toast;
 
@@ -28,7 +30,7 @@ public class MyApplication extends LitePalApplication {
     private Timer mTimer = null;
     private TimerTask mTimerTask = null;
     public Activity curActivity = null;
-
+    private int interval_time;//通过preference保存的锁屏间隔时间
     public SQLiteDatabase db = null;
 
     public SQLiteDatabase getDb() {
@@ -55,6 +57,7 @@ public class MyApplication extends LitePalApplication {
     public void onCreate() {
         super.onCreate();
         Log.d(TAG, "MyApplication onCreate 事件执行");
+
         startTimer();
         //刷新下时间
         c.setTime(new Date());
@@ -93,11 +96,26 @@ public class MyApplication extends LitePalApplication {
 
             @Override
             public void onActivityDestroyed(Activity activity) {
-
+                //如果主activity结束了，那么就退出应用
+                if (activity.getClass().equals(MainActivity.class)) {
+                    mTimer.cancel();
+                    mTimer.purge();
+                    mTimerTask.cancel();
+                    mTimerTask = null;
+                    mTimer = null;
+                    System.exit(0);
+                }
             }
         });
     }
 
+    private void getIntervalTime() {
+        //取出锁屏间隔时间
+        SharedPreferences sharedPreferences = PreferenceManager.getDefaultSharedPreferences(this);
+        String intertime = sharedPreferences.getString("time", "120");
+        this.interval_time = Integer.valueOf(intertime).intValue();
+        Log.d(TAG, "锁屏时间间隔是：" + intertime + "秒");
+    }
 
     private void startTimer() {
         if (mTimer == null) {
@@ -113,8 +131,9 @@ public class MyApplication extends LitePalApplication {
                 }
             };
         }
-        //每5秒钟调用一次timertask，检查是否有操作，如果无操作持续1分钟，那么就自动锁定
+        //每1秒钟调用一次timertask，检查是否有操作，如果无操作持续时间超过偏好设置设置的时间，那么就自动锁定
         if (mTimer != null && mTimerTask != null)
+            //每秒检查一次
             mTimer.schedule(mTimerTask, 0, 1000);
     }
 
@@ -130,6 +149,8 @@ public class MyApplication extends LitePalApplication {
     }
 
     public void startPatternLock() {
+        //刷新下间隔时间
+        this.getIntervalTime();
         //比较一下时间，超出10秒则需要重新登录
         Calendar c2 = Calendar.getInstance();
         c2.setTime(new Date());
@@ -137,7 +158,7 @@ public class MyApplication extends LitePalApplication {
         long val = c2.getTimeInMillis() - c.getTimeInMillis();
         // 换算后得到秒数
         long s = val / (1000);
-        if (s > 60 && this.curActivity != null && !this.curActivity.getClass().equals(MyConfirmPatternActivity.class)) {
+        if (s > interval_time && this.curActivity != null && !this.curActivity.getClass().equals(MyConfirmPatternActivity.class)) {
             //启动解锁界面
             Intent intent = new Intent(this, MyConfirmPatternActivity.class);
             intent.addFlags(Intent.FLAG_ACTIVITY_NEW_TASK);

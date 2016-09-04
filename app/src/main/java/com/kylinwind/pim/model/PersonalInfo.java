@@ -37,6 +37,16 @@ public class PersonalInfo  extends DataSupport {
     private String bank;
     private String type;
     private String bank_user_name;
+    private String card;
+
+    public String getCard() {
+        return card;
+    }
+
+    public void setCard(String card) {
+        this.card = card;
+    }
+
     private Date create_datetime;
     private Date mod_datetime;
 

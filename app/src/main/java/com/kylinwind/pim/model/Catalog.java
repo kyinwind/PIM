@@ -12,24 +12,15 @@ import java.util.List;
  * Created by yangx on 2016/8/14.
  */
 public class Catalog extends DataSupport {
-    private int id ;
 
-    public int getId() {
-        return id;
-    }
-
-    public void setId(int id) {
-        this.id = id;
-    }
 
     @Column(unique = true, defaultValue = "unknown")
-    private int catalog_id;
+    private int id;
     private String name;
     private String type;
     private int icon;
     private int up_catalog_id;
     private int ord;
-
     private List<PersonalInfo> personalInfoList = new ArrayList<PersonalInfo>();
 
     public List<PersonalInfo> getPersonalInfoList() {
@@ -39,15 +30,13 @@ public class Catalog extends DataSupport {
     public void setPersonalInfoList(List<PersonalInfo> personalInfoList) {
         this.personalInfoList = personalInfoList;
     }
-// generated getters and setters.
 
-
-    public int getCatalog_id() {
-        return catalog_id;
+    public int getId() {
+        return id;
     }
 
-    public void setCatalog_id(int catalog_id) {
-        this.catalog_id = catalog_id;
+    public void setId(int id) {
+        this.id = id;
     }
 
     public String getName() {
@@ -106,7 +95,7 @@ public class Catalog extends DataSupport {
     }
 
     public int getMaxCatalogId() {
-        int result = DataSupport.max(Catalog.class, "catalog_id", int.class);
+        int result = DataSupport.max(Catalog.class, "id", int.class);
         return result;
     }
 

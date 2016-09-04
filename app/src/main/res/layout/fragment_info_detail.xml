@@ -14,26 +14,48 @@
 
 
     <LinearLayout
-        android:orientation="horizontal"
         android:layout_width="match_parent"
+        android:layout_height="40dp"
         android:background="@drawable/textview_border_bottom"
-        android:layout_height="40dp">
+        android:orientation="horizontal">
 
         <ImageButton
+            android:id="@+id/ibBackFromInfoDetail"
             android:layout_width="40dp"
             android:layout_height="match_parent"
             android:layout_gravity="left"
-            android:src = "@mipmap/back"
-            android:id="@+id/ibBackFromInfoDetail" />
+            android:background="@mipmap/back" />
     </LinearLayout>
 
     <ListView
-        android:id="@+id/listView"
+        android:id="@+id/listView_info_detail"
         android:layout_width="match_parent"
-        android:layout_height="342dp"
+        android:layout_height="match_parent"
         android:layout_gravity="center_horizontal"
+        android:descendantFocusability="afterDescendants"
         android:layout_weight="1"
         android:background="@drawable/textview_border_bottom"
         android:choiceMode="singleChoice" />
 
+    <RelativeLayout
+        android:id="@+id/buttongroup"
+        android:layout_width="match_parent"
+        android:layout_height="40dp"
+        android:background="@drawable/textview_border_bottom"
+        android:orientation="horizontal">
+
+        <ImageButton
+            android:id="@+id/ibOK"
+            android:layout_width="40dp"
+            android:layout_height="match_parent"
+            android:layout_alignParentLeft="true"
+            android:background="@mipmap/ok" />
+
+        <ImageButton
+            android:id="@+id/ibCancel"
+            android:layout_width="40dp"
+            android:layout_height="match_parent"
+            android:layout_alignParentRight="true"
+            android:background="@mipmap/cancel" />
+    </RelativeLayout>
 </LinearLayout>
