@@ -3,12 +3,17 @@ package com.kylinwind.pim;
 import android.app.Fragment;
 
 import android.content.Context;
+import android.content.DialogInterface;
 import android.os.Bundle;
 import android.support.annotation.Nullable;
+import android.support.v7.app.AlertDialog;
+import android.text.Editable;
+import android.text.TextWatcher;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 
+import android.view.inputmethod.InputMethodManager;
 import android.widget.BaseAdapter;
 import android.widget.EditText;
 
@@ -17,7 +22,9 @@ import android.widget.ListView;
 import android.widget.RelativeLayout;
 import android.widget.Spinner;
 import android.widget.TextView;
+import android.widget.Toast;
 
+import com.kylinwind.pim.model.Catalog;
 import com.kylinwind.pim.model.PersonalInfo;
 
 import org.litepal.crud.DataSupport;
@@ -33,7 +40,6 @@ import java.util.Map;
 public class FragmentInfoDetail extends Fragment {
     public Context cont;
     private static final String TAG = "FragmentInfoDetail";
-    List<Map<String, String>> infoDetailList = new ArrayList<Map<String, String>>();
     ListViewAdapter lva;
     private ListView listView = null;
     String[] data;
@@ -44,11 +50,13 @@ public class FragmentInfoDetail extends Fragment {
     ImageButton ibOk;
     ImageButton ibCancel;
     RelativeLayout buttongroup;
+    private PersonalInfo pi;
+    private int catalogid;
+    boolean modify_flag = false;//是否修改过
 
     @Override
     public void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-
     }
 
     @Nullable
@@ -63,7 +71,7 @@ public class FragmentInfoDetail extends Fragment {
         ibBack.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
-                getActivity().onBackPressed();
+                goBack();
             }
         });
 
@@ -72,8 +80,48 @@ public class FragmentInfoDetail extends Fragment {
         buttongroup = (RelativeLayout) v.findViewById(R.id.buttongroup);
 
         ibOk.setOnClickListener(new View.OnClickListener() {
+
             @Override
             public void onClick(View view) {
+                //将输入法隐藏，mPasswordEditText 代表密码输入框
+                //InputMethodManager imm = (InputMethodManager) getActivity().getApplication().getSystemService(Context.INPUT_METHOD_SERVICE);
+                //imm.hideSoftInputFromWindow(listView.getWindowToken(), 0);
+                //开始保存
+                if (modify_flag) {
+                    int i = 0;
+                    switch (type) {
+                        case R.mipmap.bank:
+                            pi.setType(value[0]);
+                            pi.setBank(value[1]);
+                            pi.setBank_user_name(value[2]);
+                            pi.setCard(value[3]);
+                            pi.setPassword(value[4]);
+                            pi.setRemarks(value[5]);
+
+                            break;
+                        case R.mipmap.website:
+                            pi.setTitle(value[0]);
+                            pi.setUser_name(value[1]);
+                            pi.setPassword(value[2]);
+                            pi.setUrl(value[3]);
+                            pi.setMail(value[4]);
+                            pi.setRemarks(value[5]);
+                            break;
+                        default:
+                            pi.setTitle(value[0]);
+                            pi.setRemarks(value[1]);
+                            break;
+                    }
+                    pi.setUp_catalog_id(catalogid);
+                    if (!pi.save()) {
+                        Toast.makeText(cont, "保存失败！", Toast.LENGTH_LONG);
+                    } else {
+                        Toast.makeText(cont, "保存成功！", Toast.LENGTH_LONG);
+                    }
+
+                } else {
+                    Toast.makeText(cont, "您没有修改内容，无须保存！", Toast.LENGTH_LONG);
+                }
 
             }
         });
@@ -81,7 +129,7 @@ public class FragmentInfoDetail extends Fragment {
         ibCancel.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
-
+                goBack();
             }
         });
 
@@ -95,22 +143,49 @@ public class FragmentInfoDetail extends Fragment {
         return v;
     }
 
+    public void goBack() {
+        if (modify_flag) {
+            TextView tv = new TextView(cont);
+            tv.setText("是否确定取消修改?");
+            new AlertDialog.Builder(cont).
+                    setTitle("请确定是否取消").
+                    setIcon(android.R.drawable.ic_dialog_info).
+                    setView(tv).
+                    setPositiveButton("确定", new DialogInterface.OnClickListener() {
+                        //which为点击按钮的标识符，是一个 整形的数据，对于这三个按钮而言，每个按钮使用不同的int类型数据进行标识：
+                        // Positive（-1）、Negative(-2)、 Neutral(-3)。
+                        @Override
+                        public void onClick(DialogInterface dialog, int which) {
+                            getActivity().onBackPressed();
+                        }
+                    }).
+                    setNegativeButton("取消", null).
+                    show();
+
+
+        } else {
+            getActivity().onBackPressed();
+        }
+
+    }
+
     @Override
     public void onAttach(Context context) {
         super.onAttach(context);
         cont = context;
     }
 
-    public void setData(int type, int id) {
+    public void setData(int type, int id, int catalogid) {
         this.type = type;
         this.id = id;
+        this.catalogid = catalogid;
         //根据id初始化数据
         if (id > 0) {
-            PersonalInfo pi = DataSupport.find(PersonalInfo.class, id);
+            pi = DataSupport.find(PersonalInfo.class, id);
             int i = 0;
             switch (type) {
                 case R.mipmap.bank:
-                    i = 5;
+                    i = 6;
                     data = new String[i];
                     value = new String[i];
                     data[0] = "类别";
@@ -127,7 +202,7 @@ public class FragmentInfoDetail extends Fragment {
                     value[5] = pi.getRemarks();
                     break;
                 case R.mipmap.website:
-                    i = 5;
+                    i = 6;
                     data = new String[i];
                     value = new String[i];
                     data[0] = "标题";
@@ -154,15 +229,16 @@ public class FragmentInfoDetail extends Fragment {
                     break;
 
             }
-            if (i > 0) {
+           /* if (i > 0) {
                 int m = 0;
                 for (m = 0; m < i; m++) {
                     HashMap map = new HashMap();
                     map.put(data[m], value[m]);
                     infoDetailList.add(map);
                 }
-            }
+            }*/
         } else if (id == 0) {
+            pi = new PersonalInfo();
             //新建一条记录
             int i = 0;
 
@@ -212,14 +288,14 @@ public class FragmentInfoDetail extends Fragment {
                     break;
 
             }
-            if (i > 0) {
+           /* if (i > 0) {
                 int m = 0;
                 for (m = 0; m <= i; m++) {
                     HashMap map = new HashMap();
                     map.put(data[m], value[m]);
                     infoDetailList.add(map);
                 }
-            }
+            }*/
         }
     }
 
@@ -235,6 +311,7 @@ public class FragmentInfoDetail extends Fragment {
                 v = this.generateView(position, parent);
             }
             this.fillValues(position, v);
+
             return v;
         }
 
@@ -245,7 +322,7 @@ public class FragmentInfoDetail extends Fragment {
 
         public ListViewAdapter(Context mContext) {
             this.mContext = mContext;
-            for (int i = 0; i < infoDetailList.size(); i++) {
+            for (int i = 0; i < data.length; i++) {
                 itemViews.add(null);
             }
         }
@@ -279,13 +356,46 @@ public class FragmentInfoDetail extends Fragment {
 /*fill values to your item layout returned from `generateView`.
   The position param here is passed from the BaseAdapter's 'getView()*/
             String strTitle = data[i];
-            String strText = infoDetailList.get(i).get(data[i]);
+            String strText = value[i];
 
             // 通过findViewById()方法实例R.layout.item内各组件
             TextView title = (TextView) view.findViewById(R.id.listitem_info_detail_tvTitle);
             title.setText(strTitle);    //填入相应的值
             EditText edtext = (EditText) view.findViewById(R.id.listitem_info_detail_title_edText);
             edtext.setText(strText);
+
+            edtext.addTextChangedListener(new TextWatcher() {
+                @Override
+                public void afterTextChanged(Editable s) {
+                    // TODO Auto-generated method stub
+                    //s:变化后的所有字符
+                    //Toast.makeText(getApplicationContext(), "变化:" + s, Toast.LENGTH_SHORT).show();
+                }
+
+                @Override
+                public void beforeTextChanged(CharSequence s, int start, int count,
+                                              int after) {
+                    // TODO Auto-generated method stub
+                    //s:变化前的所有字符； start:字符开始的位置； count:变化前的总字节数；after:变化后的字节数
+                    //Toast.makeText(getApplicationContext(), "变化前:" + s + ";" + start + ";" + count + ";" + after, Toast.LENGTH_SHORT).show();
+                }
+
+                @Override
+                public void onTextChanged(CharSequence s, int start, int before,
+                                          int count) {
+                    //修改标记
+                    modify_flag = true;
+                    // TODO Auto-generated method stub
+                    //S：变化后的所有字符；start：字符起始的位置；before: 变化之前的总字节数；count:变化后的字节数
+                    //Toast.makeText(getApplicationContext(), "变化后:" + s + ";" + start + ";" + before + ";" + count, Toast.LENGTH_SHORT).show();
+                }
+            });
+
+            if (!data[i].equals("备注")) {
+                edtext.setSingleLine();
+            } else {
+                edtext.setMinLines(3);
+            }
             Spinner spinner = (Spinner) view.findViewById(R.id.listitem_info_detail_spinner);
             //只有类型是银行账户，并且是第一项时，才显示选择银行的spinner
             if (type == R.mipmap.bank && i == 0) {
@@ -295,6 +405,11 @@ public class FragmentInfoDetail extends Fragment {
                 spinner.setVisibility(View.INVISIBLE);
                 edtext.setVisibility(View.VISIBLE);
             }
+            //将map里面的数据放到tag
+            HashMap map = new HashMap();
+            map.put("1", data[i]);
+            map.put("2", value[i]);
+            view.setTag(map);
         }
 
     }

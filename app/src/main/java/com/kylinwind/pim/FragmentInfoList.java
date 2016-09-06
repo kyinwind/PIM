@@ -46,7 +46,9 @@ public class FragmentInfoList extends Fragment {
     String curInfoName;
     ListViewAdapter lva;
     ImageButton ibBack;
-    public int icon;
+    private int icon;
+    private String type;
+    private int catalogid;//上级catalogid
 
     public int getIcon() {
         return icon;
@@ -54,6 +56,22 @@ public class FragmentInfoList extends Fragment {
 
     public void setIcon(int icon) {
         this.icon = icon;
+    }
+
+    public String getType() {
+        return type;
+    }
+
+    public void setType(String type) {
+        this.type = type;
+    }
+
+    public int getCatalogid() {
+        return catalogid;
+    }
+
+    public void setCatalogid(int catalogid) {
+        this.catalogid = catalogid;
     }
 
     @Override
@@ -70,9 +88,9 @@ public class FragmentInfoList extends Fragment {
         ibDel = (ImageButton) v.findViewById(R.id.ibDel);
         ibBack = (ImageButton) v.findViewById(R.id.ibBackFromInfoList);
 
-        //取出所有目录数据
+        //取出所有记录数据
         PersonalInfo pi = new PersonalInfo();
-        infolist = pi.findAll(PersonalInfo.class);
+        infolist = DataSupport.where("up_catalog_id = ?", Integer.valueOf(catalogid).toString()).find(PersonalInfo.class);
 
         lva = new ListViewAdapter(cont);
         lva.setMode(Attributes.Mode.Single);
@@ -98,20 +116,20 @@ public class FragmentInfoList extends Fragment {
                 fm = getFragmentManager();
                 Fragment fragment = fm.findFragmentById(R.id.fragment_container);
                 FragmentInfoDetail fragmentInfoDetail = new FragmentInfoDetail();
-                fragmentInfoDetail.setData(icon,id);
+                fragmentInfoDetail.setData(icon, id,catalogid);
                 ft = fm.beginTransaction();
                 ft.add(R.id.fragment_container, fragmentInfoDetail);
                 ft.addToBackStack(null);
                 ft.commit();
             }
         });
-        ibBack.setOnClickListener(new View.OnClickListener(){
+        ibBack.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
                 getFragmentManager().popBackStack();
             }
         });
-        ibAdd.setOnClickListener(new View.OnClickListener(){
+        ibAdd.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
                 //新增一个记录
@@ -120,7 +138,7 @@ public class FragmentInfoList extends Fragment {
                 fm = getFragmentManager();
                 Fragment fragment = fm.findFragmentById(R.id.fragment_container);
                 FragmentInfoDetail fragmentInfoDetail = new FragmentInfoDetail();
-                fragmentInfoDetail.setData(icon,0);
+                fragmentInfoDetail.setData(icon, 0,catalogid);
                 ft = fm.beginTransaction();
                 ft.add(R.id.fragment_container, fragmentInfoDetail);
                 ft.addToBackStack(null);
@@ -129,6 +147,12 @@ public class FragmentInfoList extends Fragment {
         });
 
         return v;
+    }
+
+    public void setData(String type, int icon, int catid) {
+        this.type = type;
+        this.catalogid = catid;
+        this.icon = icon;
     }
 
     @Override

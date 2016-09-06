@@ -107,7 +107,7 @@ public class FragmentCatalog extends Fragment {
                 FragmentTransaction ft;
                 fm = getActivity().getFragmentManager();
                 FragmentInfoList fragment = new FragmentInfoList();
-                fragment.setIcon(c.getIcon());
+                fragment.setData(c.getType(),c.getIcon(),c.getId());
                 ft = fm.beginTransaction();
                 ft.replace(R.id.fragment_container, fragment);
                 ft.addToBackStack(null);

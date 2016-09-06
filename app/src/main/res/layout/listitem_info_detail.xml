@@ -2,13 +2,13 @@
 <FrameLayout xmlns:android="http://schemas.android.com/apk/res/android"
     android:id="@+id/listitem_info_detail"
     android:layout_width="match_parent"
-    android:layout_height="match_parent"
+    android:layout_height="wrap_content"
     android:orientation="horizontal"
     android:minHeight="40dp">
 
     <LinearLayout
         android:layout_width="match_parent"
-        android:layout_height="match_parent"
+        android:layout_height="wrap_content"
         android:orientation="horizontal"
         android:padding="10dp"
         android:weightSum="10">
@@ -19,6 +19,7 @@
             android:layout_height="match_parent"
             android:layout_gravity="center"
             android:layout_weight="2"
+            android:minWidth="50dp"
             android:gravity="center"
             android:text="" />
 
@@ -31,7 +32,7 @@
             <EditText
                 android:id="@+id/listitem_info_detail_title_edText"
                 android:layout_width="match_parent"
-                android:layout_height="match_parent"
+                android:layout_height="wrap_content"
                 android:layout_gravity="center_vertical"
                 android:enabled="true"
                 android:layout_weight="7" />
@@ -49,8 +50,9 @@
             android:layout_width="20dp"
             android:layout_height="40dp"
             android:layout_gravity="center_vertical"
-            android:src="@mipmap/copy"
+            android:background="@mipmap/copy"
             android:scaleType="fitCenter"
+            android:minWidth="50dp"
             android:layout_weight="1"/>
 
     </LinearLayout>

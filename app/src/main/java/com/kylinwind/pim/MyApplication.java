@@ -114,7 +114,7 @@ public class MyApplication extends LitePalApplication {
         SharedPreferences sharedPreferences = PreferenceManager.getDefaultSharedPreferences(this);
         String intertime = sharedPreferences.getString("time", "120");
         this.interval_time = Integer.valueOf(intertime).intValue();
-        Log.d(TAG, "锁屏时间间隔是：" + intertime + "秒");
+        //Log.d(TAG, "锁屏时间间隔是：" + intertime + "秒");
     }
 
     private void startTimer() {
