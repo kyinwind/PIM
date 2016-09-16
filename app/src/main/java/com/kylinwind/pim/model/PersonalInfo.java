@@ -1,5 +1,8 @@
 package com.kylinwind.pim.model;
 
+import android.os.Parcel;
+import android.os.Parcelable;
+
 import org.litepal.annotation.Column;
 import org.litepal.crud.DataSupport;
 
@@ -9,22 +12,22 @@ import java.util.List;
 
 /**
  * Created by yangx on 2016/8/14.
- Name	Code	Data Type	Length	Precision	Primary	Foreign Key	Mandatory
- 编号	ID	NUMERIC(10)	10		TRUE	FALSE	TRUE
- 上级目录编号	UP_CATALOG_ID	NUMERIC(10)	10		FALSE	FALSE	TRUE
- 标题	TITLE	VARCHAR(50)	50		FALSE	FALSE	FALSE
- 用户名	USER_NAME	VARCHAR(50)	50		FALSE	FALSE	FALSE
- 密码	PASSWORD	VARCHAR(50)	50		FALSE	FALSE	FALSE
- 网址	URL	VARCHAR(50)	50		FALSE	FALSE	FALSE
- 邮箱	MAIL	VARCHAR(50)	50		FALSE	FALSE	FALSE
- 备注	REMARKS	VARCHAR(1000)	1000		FALSE	FALSE	FALSE
- 开户行	BANK	VARCHAR(50)	50		FALSE	FALSE	FALSE
- 类别	TYPE	VARCHAR(50)	50		FALSE	FALSE	FALSE
- 户名	BANK_USER_NAME	VARCHAR(50)	50		FALSE	FALSE	FALSE
- 创建时间	CREATE_DATETIME	DATE			FALSE	FALSE	TRUE
- 修改时间	MOD_DATETIME	DATE			FALSE	FALSE	TRUE
+ * Name	Code	Data Type	Length	Precision	Primary	Foreign Key	Mandatory
+ * 编号	ID	NUMERIC(10)	10		TRUE	FALSE	TRUE
+ * 上级目录编号	UP_CATALOG_ID	NUMERIC(10)	10		FALSE	FALSE	TRUE
+ * 标题	TITLE	VARCHAR(50)	50		FALSE	FALSE	FALSE
+ * 用户名	USER_NAME	VARCHAR(50)	50		FALSE	FALSE	FALSE
+ * 密码	PASSWORD	VARCHAR(50)	50		FALSE	FALSE	FALSE
+ * 网址	URL	VARCHAR(50)	50		FALSE	FALSE	FALSE
+ * 邮箱	MAIL	VARCHAR(50)	50		FALSE	FALSE	FALSE
+ * 备注	REMARKS	VARCHAR(1000)	1000		FALSE	FALSE	FALSE
+ * 开户行	BANK	VARCHAR(50)	50		FALSE	FALSE	FALSE
+ * 类别	TYPE	VARCHAR(50)	50		FALSE	FALSE	FALSE
+ * 户名	BANK_USER_NAME	VARCHAR(50)	50		FALSE	FALSE	FALSE
+ * 创建时间	CREATE_DATETIME	DATE			FALSE	FALSE	TRUE
+ * 修改时间	MOD_DATETIME	DATE			FALSE	FALSE	TRUE
  */
-public class PersonalInfo  extends DataSupport {
+public class PersonalInfo extends DataSupport implements Parcelable {
     @Column(unique = true, defaultValue = "unknown")
     private int id;
     private int up_catalog_id;
@@ -173,4 +176,56 @@ public class PersonalInfo  extends DataSupport {
     public void setMod_datetime(Date mod_datetime) {
         this.mod_datetime = mod_datetime;
     }
+
+    @Override
+    public int describeContents() {
+        return 0;
+    }
+
+    @Override
+    public void writeToParcel(Parcel parcel, int i) {
+        parcel.writeInt(id);
+        parcel.writeInt(up_catalog_id);
+        parcel.writeString(title);
+        parcel.writeString(user_name);
+        parcel.writeString(password);
+        parcel.writeString(url);
+        parcel.writeString(mail);
+        parcel.writeString(remarks);
+        parcel.writeString(bank);
+        parcel.writeString(type);
+        parcel.writeString(bank_user_name);
+        parcel.writeString(card);
+    }
+
+    public static final Parcelable.Creator<PersonalInfo> CREATOR = new Parcelable.Creator<PersonalInfo>() {
+
+        public PersonalInfo createFromParcel(Parcel in) {
+            return new PersonalInfo(in);
+        }
+
+        public PersonalInfo[] newArray(int size) {
+            return new PersonalInfo[size];
+        }
+    };
+
+    public PersonalInfo() {
+        super();
+    }
+
+    public PersonalInfo(Parcel in) {
+        id = in.readInt();
+        up_catalog_id = in.readInt();
+        title = in.readString();
+        user_name = in.readString();
+        password = in.readString();
+        url = in.readString();
+        mail = in.readString();
+        remarks = in.readString();
+        bank = in.readString();
+        type = in.readString();
+        bank_user_name = in.readString();
+        card = in.readString();
+    }
 }
+

@@ -38,7 +38,7 @@
         android:padding="10dp">
 
         <ImageView
-            android:id="@+id/catalog_img"
+            android:id="@+id/listitem_info_img"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:layout_weight="1"
@@ -50,14 +50,14 @@
             android:orientation="vertical">
 
             <TextView
-                android:id="@+id/title"
+                android:id="@+id/listitem_info_title"
                 android:layout_width="242dp"
                 android:layout_height="wrap_content"
                 android:text="标题"
                 android:textAppearance="?android:attr/textAppearanceMedium" />
 
             <TextView
-                android:id="@+id/info"
+                android:id="@+id/listitem_info_info"
                 android:layout_width="match_parent"
                 android:layout_height="47dp"
                 android:text="信息" />

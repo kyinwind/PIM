@@ -10,6 +10,7 @@ import android.support.annotation.Nullable;
 
 import android.app.Fragment;
 import android.support.v7.app.AlertDialog;
+import android.support.v7.widget.TintContextWrapper;
 import android.util.Log;
 import android.view.ContextMenu;
 import android.view.LayoutInflater;
@@ -107,7 +108,7 @@ public class FragmentCatalog extends Fragment {
                 FragmentTransaction ft;
                 fm = getActivity().getFragmentManager();
                 FragmentInfoList fragment = new FragmentInfoList();
-                fragment.setData(c.getType(),c.getIcon(),c.getId());
+                fragment.initData(c.getType(), c.getIcon(), c.getId());
                 ft = fm.beginTransaction();
                 ft.replace(R.id.fragment_container, fragment);
                 ft.addToBackStack(null);
@@ -176,6 +177,8 @@ public class FragmentCatalog extends Fragment {
         ibSetting.setOnClickListener(new View.OnClickListener() {
             public void onClick(View v) {
                 Context context = v.getContext();
+                if (context instanceof TintContextWrapper)
+                    context = ((TintContextWrapper) context).getBaseContext();
                 if (context instanceof MainActivity) {
 
                     FragmentTransaction t = getFragmentManager().beginTransaction();

@@ -9,10 +9,11 @@ import android.content.Intent;
 import android.content.SharedPreferences;
 import android.os.Bundle;
 import android.preference.PreferenceManager;
+import android.support.v7.app.AppCompatActivity;
 import android.util.Log;
 import android.view.KeyEvent;
 
-public class MainActivity extends Activity {
+public class MainActivity extends AppCompatActivity {
     private static String TAG = "MainActivity";
 
     @Override

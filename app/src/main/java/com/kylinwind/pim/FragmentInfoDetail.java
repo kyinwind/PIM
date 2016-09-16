@@ -1,9 +1,11 @@
 package com.kylinwind.pim;
 
+import android.app.Activity;
 import android.app.Fragment;
 
 import android.content.Context;
 import android.content.DialogInterface;
+import android.content.Intent;
 import android.os.Bundle;
 import android.support.annotation.Nullable;
 import android.support.v7.app.AlertDialog;
@@ -53,6 +55,7 @@ public class FragmentInfoDetail extends Fragment {
     private PersonalInfo pi;
     private int catalogid;
     boolean modify_flag = false;//是否修改过
+    String oper = "";//是新增还是修改
 
     @Override
     public void onCreate(Bundle savedInstanceState) {
@@ -88,6 +91,8 @@ public class FragmentInfoDetail extends Fragment {
                 //imm.hideSoftInputFromWindow(listView.getWindowToken(), 0);
                 //开始保存
                 if (modify_flag) {
+                    getUpdatedData();
+
                     int i = 0;
                     switch (type) {
                         case R.mipmap.bank:
@@ -113,15 +118,22 @@ public class FragmentInfoDetail extends Fragment {
                             break;
                     }
                     pi.setUp_catalog_id(catalogid);
+                    //取消软键盘
+                    listView.clearFocus();
                     if (!pi.save()) {
                         Toast.makeText(cont, "保存失败！", Toast.LENGTH_LONG);
                     } else {
                         Toast.makeText(cont, "保存成功！", Toast.LENGTH_LONG);
+                        //将保存成功的pi传回到上一个fragment
+                        sendResult(Activity.RESULT_OK);
+                        //清除修改标志
+                        modify_flag = false;
                     }
 
                 } else {
                     Toast.makeText(cont, "您没有修改内容，无须保存！", Toast.LENGTH_LONG);
                 }
+
 
             }
         });
@@ -135,12 +147,59 @@ public class FragmentInfoDetail extends Fragment {
 
         //设置按钮是否可见
         if (id > 0) {
-            buttongroup.setVisibility(View.INVISIBLE);
+            buttongroup.setVisibility(View.GONE);
         } else {
             buttongroup.setVisibility(View.VISIBLE);
         }
 
         return v;
+    }
+
+    private void sendResult(int resultOk) {
+        if (getTargetFragment() == null) {
+            return;
+        } else {
+            Intent i = new Intent();
+            Bundle bundle = new Bundle();
+            i.putExtra("opt", oper);
+            bundle.putParcelable("object",pi);
+            i.putExtras(bundle);
+            getTargetFragment().onActivityResult(getTargetRequestCode(), resultOk, i);
+        }
+    }
+
+    public void getUpdatedData() {
+        //从listview里面取出修改后的数据，放到value数组里面
+        int i = 0;
+        switch (type) {
+            case R.mipmap.bank:
+                i = 6;
+                break;
+            case R.mipmap.website:
+                i = 6;
+                break;
+            default:
+                i = 2;
+                break;
+        }
+        for (int j = 0; j < i; j++) {
+            View v;
+            HashMap m;
+            EditText et;
+            v = (View) listView.getAdapter().getItem(j);
+            m = (HashMap) v.getTag();
+            et = (EditText) m.get("3");
+            value[j] = et.getText().toString();
+        }
+        if (type == R.mipmap.bank) {
+            View v;
+            HashMap m;
+            Spinner s;
+            v = (View) listView.getAdapter().getItem(0);
+            m = (HashMap) v.getTag();
+            s = (Spinner) m.get("4");
+            value[0] = s.getSelectedItem().toString();
+        }
     }
 
     public void goBack() {
@@ -162,12 +221,12 @@ public class FragmentInfoDetail extends Fragment {
                     setNegativeButton("取消", null).
                     show();
 
-
         } else {
             getActivity().onBackPressed();
         }
 
     }
+
 
     @Override
     public void onAttach(Context context) {
@@ -175,10 +234,12 @@ public class FragmentInfoDetail extends Fragment {
         cont = context;
     }
 
-    public void setData(int type, int id, int catalogid) {
+    public void initData(String opt,int type, int id, int catalogid,PersonalInfo p) {
+        this.oper = opt;
         this.type = type;
         this.id = id;
         this.catalogid = catalogid;
+        this.pi = p ;
         //根据id初始化数据
         if (id > 0) {
             pi = DataSupport.find(PersonalInfo.class, id);
@@ -300,7 +361,7 @@ public class FragmentInfoDetail extends Fragment {
     }
 
     public class ListViewAdapter extends BaseAdapter {
-        List<View> itemViews = new ArrayList();
+        public List<View> itemViews = new ArrayList();
 
         private Context mContext;
 
@@ -363,13 +424,14 @@ public class FragmentInfoDetail extends Fragment {
             title.setText(strTitle);    //填入相应的值
             EditText edtext = (EditText) view.findViewById(R.id.listitem_info_detail_title_edText);
             edtext.setText(strText);
-
             edtext.addTextChangedListener(new TextWatcher() {
                 @Override
                 public void afterTextChanged(Editable s) {
                     // TODO Auto-generated method stub
+                    //修改标记
+                    modify_flag = true;
                     //s:变化后的所有字符
-                    //Toast.makeText(getApplicationContext(), "变化:" + s, Toast.LENGTH_SHORT).show();
+                    //Toast.makeText(cont, "变化:" + s, Toast.LENGTH_SHORT).show();
                 }
 
                 @Override
@@ -383,11 +445,9 @@ public class FragmentInfoDetail extends Fragment {
                 @Override
                 public void onTextChanged(CharSequence s, int start, int before,
                                           int count) {
-                    //修改标记
-                    modify_flag = true;
                     // TODO Auto-generated method stub
                     //S：变化后的所有字符；start：字符起始的位置；before: 变化之前的总字节数；count:变化后的字节数
-                    //Toast.makeText(getApplicationContext(), "变化后:" + s + ";" + start + ";" + before + ";" + count, Toast.LENGTH_SHORT).show();
+                    //Toast.makeText(cont, "变化后:" + s + ";" + start + ";" + before + ";" + count, Toast.LENGTH_SHORT).show();
                 }
             });
 
@@ -409,7 +469,12 @@ public class FragmentInfoDetail extends Fragment {
             HashMap map = new HashMap();
             map.put("1", data[i]);
             map.put("2", value[i]);
+            map.put("3", edtext);
+            map.put("4", spinner);
             view.setTag(map);
+
+            //设置修改标志
+            modify_flag = false;
         }
 
     }
